@@ -1,7 +1,18 @@
 import { useState } from "react";
 import { Link, redirect } from "react-router";
+import { CircleAlert, Loader2 } from "lucide-react";
 
 import type { Route } from "./+types/login";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { authClient } from "../auth/auth.client";
 import { createAuth } from "../auth/auth.server";
 
@@ -40,48 +51,62 @@ export default function Login() {
 	}
 
 	return (
-		<main className="flex min-h-screen items-center justify-center px-4 py-16">
-			<div className="w-full max-w-md rounded-3xl border border-gray-200 bg-surface p-8 shadow-sm dark:border-gray-700">
-				<div className="space-y-2 text-center">
-					<h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-						Sign in
-					</h1>
-					<p className="text-sm text-gray-600 dark:text-gray-400">
-						Continue with your Google account to access Servisnik.
+		<main className="flex min-h-screen items-center justify-center bg-[radial-gradient(ellipse_at_top,var(--muted)_0%,var(--background)_55%)] px-4 py-16">
+			<Card className="w-full max-w-sm shadow-sm">
+				<CardHeader className="items-center gap-3 pb-1 text-center">
+					<p className="text-[11px] font-medium tracking-[0.2em] text-muted-foreground/60 uppercase">
+						Servisnik
 					</p>
-				</div>
+					<CardTitle className="text-3xl font-semibold tracking-tight">
+						Sign in
+					</CardTitle>
+					<CardDescription className="text-sm leading-relaxed">
+						Use your Google account to continue.
+					</CardDescription>
+				</CardHeader>
 
-				<div className="mt-8 space-y-4">
-					<button
+				<CardContent className="space-y-4">
+					<Button
 						type="button"
+						variant="outline"
+						size="lg"
+						className="h-11 w-full"
 						onClick={signInWithGoogle}
 						disabled={isLoading}
-						className="flex w-full items-center justify-center gap-3 rounded-2xl bg-surface-strong px-4 py-3 text-sm font-medium text-secondary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
 					>
-						<GoogleIcon />
-						{isLoading ? "Redirecting..." : "Continue with Google"}
-					</button>
+						{isLoading ? (
+							<Loader2 className="size-5 animate-spin" aria-hidden="true" />
+						) : (
+							<GoogleIcon />
+						)}
+						{isLoading ? "Redirecting…" : "Continue with Google"}
+					</Button>
 
 					{error ? (
-						<p className="text-center text-sm text-red-600 dark:text-red-400">
-							{error}
-						</p>
+						<Alert variant="destructive">
+							<CircleAlert />
+							<AlertTitle>Sign-in failed</AlertTitle>
+							<AlertDescription>{error}</AlertDescription>
+						</Alert>
 					) : null}
-				</div>
+				</CardContent>
 
-				<p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-					<Link to="/" className="hover:underline">
+				<CardFooter className="justify-center">
+					<Link
+						to="/"
+						className="text-xs text-muted-foreground/70 underline-offset-4 hover:text-foreground hover:underline"
+					>
 						Back to home
 					</Link>
-				</p>
-			</div>
+				</CardFooter>
+			</Card>
 		</main>
 	);
 }
 
 function GoogleIcon() {
 	return (
-		<svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5">
+		<svg aria-hidden="true" viewBox="0 0 24 24" className="size-5">
 			<path
 				fill="#EA4335"
 				d="M12 10.2v3.6h5.1c-.2 1.2-1.6 3.6-5.1 3.6-3.1 0-5.6-2.5-5.6-5.6S8.9 6.2 12 6.2c1.8 0 3 .8 3.7 1.5l2.5-2.4C16.8 3.7 14.6 2.6 12 2.6 6.9 2.6 2.7 6.8 2.7 12s4.2 9.4 9.3 9.4c5.4 0 8.9-3.8 8.9-9.1 0-.6-.1-1.1-.2-1.5H12Z"
