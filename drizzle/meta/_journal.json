@@ -22,6 +22,13 @@
       "when": 1783620583849,
       "tag": "0002_adorable_golden_guardian",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1783621228586,
+      "tag": "0003_green_solo",
+      "breakpoints": true
     }
   ]
 }

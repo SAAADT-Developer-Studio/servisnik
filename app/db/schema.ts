@@ -96,7 +96,6 @@ export const ticket = pgTable("ticket", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	reporterName: text("reporter_name").notNull(),
 	description: text("description").notNull(),
-	imageUrl: text("image_url"),
 	ownerId: text("owner_id")
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
@@ -107,6 +106,15 @@ export const ticket = pgTable("ticket", {
 	status: ticketStatusEnum("status").notNull().default("PENDING"),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 	updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const ticketImage = pgTable("ticket_image", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	ticketId: uuid("ticket_id")
+		.notNull()
+		.references(() => ticket.id, { onDelete: "cascade" }),
+	storageKey: text("storage_key").notNull(),
+	createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const userRelations = relations(user, ({ many }) => ({
@@ -130,7 +138,7 @@ export const userLocationRelations = relations(userLocation, ({ one }) => ({
 	}),
 }));
 
-export const ticketRelations = relations(ticket, ({ one }) => ({
+export const ticketRelations = relations(ticket, ({ one, many }) => ({
 	owner: one(user, {
 		fields: [ticket.ownerId],
 		references: [user.id],
@@ -138,5 +146,13 @@ export const ticketRelations = relations(ticket, ({ one }) => ({
 	location: one(location, {
 		fields: [ticket.locationId],
 		references: [location.id],
+	}),
+	images: many(ticketImage),
+}));
+
+export const ticketImageRelations = relations(ticketImage, ({ one }) => ({
+	ticket: one(ticket, {
+		fields: [ticketImage.ticketId],
+		references: [ticket.id],
 	}),
 }));
