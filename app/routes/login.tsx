@@ -25,7 +25,9 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 	const session = await auth.api.getSession({ headers: request.headers });
 
 	if (session) {
-		throw redirect("/");
+		const url = new URL(request.url);
+		const redirectTo = url.searchParams.get("redirectTo");
+		throw redirect(redirectTo?.startsWith("/") ? redirectTo : "/");
 	}
 
 	return null;
