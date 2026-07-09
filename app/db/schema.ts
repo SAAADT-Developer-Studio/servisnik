@@ -1,4 +1,20 @@
-import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import {
+	boolean,
+	pgEnum,
+	pgTable,
+	primaryKey,
+	text,
+	timestamp,
+	uuid,
+} from "drizzle-orm/pg-core";
+
+export const userRoleEnum = pgEnum("user_role", ["OWNER", "ADMIN"]);
+export const ticketStatusEnum = pgEnum("ticket_status", [
+	"DENIED",
+	"APPROVED",
+	"PENDING",
+]);
 
 export const user = pgTable("user", {
 	id: text("id").primaryKey(),
@@ -6,6 +22,7 @@ export const user = pgTable("user", {
 	email: text("email").notNull().unique(),
 	emailVerified: boolean("email_verified").notNull(),
 	image: text("image"),
+	role: userRoleEnum("role").notNull().default("ADMIN"),
 	createdAt: timestamp("created_at").notNull(),
 	updatedAt: timestamp("updated_at").notNull(),
 });
@@ -49,3 +66,73 @@ export const verification = pgTable("verification", {
 	createdAt: timestamp("created_at"),
 	updatedAt: timestamp("updated_at"),
 });
+
+export const location = pgTable("location", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	name: text("name").notNull(),
+	address: text("address").notNull(),
+	createdAt: timestamp("created_at").notNull().defaultNow(),
+	updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const userLocation = pgTable(
+	"user_location",
+	{
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		locationId: uuid("location_id")
+			.notNull()
+			.references(() => location.id, { onDelete: "cascade" }),
+	},
+	(table) => [primaryKey({ columns: [table.userId, table.locationId] })],
+);
+
+export const ticket = pgTable("ticket", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	reporterName: text("reporter_name").notNull(),
+	description: text("description").notNull(),
+	imageUrl: text("image_url"),
+	ownerId: text("owner_id")
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
+	locationId: uuid("location_id")
+		.notNull()
+		.references(() => location.id, { onDelete: "cascade" }),
+	roomNumber: text("room_number").notNull(),
+	status: ticketStatusEnum("status").notNull().default("PENDING"),
+	createdAt: timestamp("created_at").notNull().defaultNow(),
+	updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const userRelations = relations(user, ({ many }) => ({
+	locations: many(userLocation),
+	ownedTickets: many(ticket),
+}));
+
+export const locationRelations = relations(location, ({ many }) => ({
+	users: many(userLocation),
+	tickets: many(ticket),
+}));
+
+export const userLocationRelations = relations(userLocation, ({ one }) => ({
+	user: one(user, {
+		fields: [userLocation.userId],
+		references: [user.id],
+	}),
+	location: one(location, {
+		fields: [userLocation.locationId],
+		references: [location.id],
+	}),
+}));
+
+export const ticketRelations = relations(ticket, ({ one }) => ({
+	owner: one(user, {
+		fields: [ticket.ownerId],
+		references: [user.id],
+	}),
+	location: one(location, {
+		fields: [ticket.locationId],
+		references: [location.id],
+	}),
+}));
