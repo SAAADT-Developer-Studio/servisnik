@@ -15,6 +15,11 @@ export const ticketStatusEnum = pgEnum("ticket_status", [
 	"APPROVED",
 	"PENDING",
 ]);
+export const ticketStageEnum = pgEnum("ticket_stage", [
+	"TODO",
+	"IN_PROGRESS",
+	"DONE",
+]);
 
 export const user = pgTable("user", {
 	id: text("id").primaryKey(),
@@ -104,6 +109,7 @@ export const ticket = pgTable("ticket", {
 		.references(() => location.id, { onDelete: "cascade" }),
 	roomNumber: text("room_number").notNull(),
 	status: ticketStatusEnum("status").notNull().default("PENDING"),
+	stage: ticketStageEnum("stage"),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 	updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

@@ -29,6 +29,13 @@
       "when": 1783621228586,
       "tag": "0003_green_solo",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1783622490058,
+      "tag": "0004_green_tusk",
+      "breakpoints": true
     }
   ]
 }

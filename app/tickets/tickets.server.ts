@@ -1,8 +1,14 @@
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 
 import { createDb } from "../db/db.server";
 import { location, ticket, ticketImage, user, userLocation } from "../db/schema";
 import { parsePhotoFiles, uploadTicketImages } from "../storage/images.server";
+import { isTicketStage, type TicketStage } from "./tickets";
+
+export type { TicketStage } from "./tickets";
+export { isTicketStage } from "./tickets";
+
+type Db = ReturnType<typeof createDb>;
 
 type CreateReportInput = {
 	locationId: string;
@@ -110,4 +116,102 @@ export async function createReport(
 	}
 
 	return { ok: true as const, ticketId: created.id };
+}
+
+export async function getOwnerBoardTickets(db: Db, ownerId: string) {
+	const approved = await db.query.ticket.findMany({
+		where: and(eq(ticket.ownerId, ownerId), eq(ticket.status, "APPROVED")),
+		with: { location: true },
+		orderBy: [desc(ticket.updatedAt)],
+	});
+
+	return { approved };
+}
+
+export async function getOwnerPendingTickets(db: Db, ownerId: string) {
+	return db.query.ticket.findMany({
+		where: and(eq(ticket.ownerId, ownerId), eq(ticket.status, "PENDING")),
+		with: { location: true, images: true },
+		orderBy: [desc(ticket.createdAt)],
+	});
+}
+
+export async function getOwnerPendingTicketCount(db: Db, ownerId: string) {
+	const [result] = await db
+		.select({ count: sql<number>`count(*)::int` })
+		.from(ticket)
+		.where(and(eq(ticket.ownerId, ownerId), eq(ticket.status, "PENDING")));
+
+	return result?.count ?? 0;
+}
+
+export async function getTicketImageForOwner(db: Db, imageId: string) {
+	return db.query.ticketImage.findFirst({
+		where: eq(ticketImage.id, imageId),
+		with: {
+			ticket: {
+				columns: { ownerId: true },
+			},
+		},
+	});
+}
+
+export async function approveTicket(db: Db, ticketId: string, ownerId: string) {
+	const [updated] = await db
+		.update(ticket)
+		.set({
+			status: "APPROVED",
+			stage: "TODO",
+			updatedAt: new Date(),
+		})
+		.where(
+			and(
+				eq(ticket.id, ticketId),
+				eq(ticket.ownerId, ownerId),
+				eq(ticket.status, "PENDING"),
+			),
+		)
+		.returning({ id: ticket.id });
+
+	return updated ?? null;
+}
+
+export async function denyTicket(db: Db, ticketId: string, ownerId: string) {
+	const [updated] = await db
+		.update(ticket)
+		.set({
+			status: "DENIED",
+			updatedAt: new Date(),
+		})
+		.where(
+			and(
+				eq(ticket.id, ticketId),
+				eq(ticket.ownerId, ownerId),
+				eq(ticket.status, "PENDING"),
+			),
+		)
+		.returning({ id: ticket.id });
+
+	return updated ?? null;
+}
+
+export async function updateTicketStage(
+	db: Db,
+	ticketId: string,
+	ownerId: string,
+	stage: TicketStage,
+) {
+	const [updated] = await db
+		.update(ticket)
+		.set({ stage, updatedAt: new Date() })
+		.where(
+			and(
+				eq(ticket.id, ticketId),
+				eq(ticket.ownerId, ownerId),
+				eq(ticket.status, "APPROVED"),
+			),
+		)
+		.returning({ id: ticket.id });
+
+	return updated ?? null;
 }
