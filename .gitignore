@@ -158,6 +158,8 @@ dist
 # Docusaurus cache and generated files
 .docusaurus
 
+.pnpm-store/
+
 # Serverless directories
 .serverless/
 

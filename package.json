@@ -33,14 +33,15 @@
 		"wrangler": "4.88.0"
 	},
 	"private": true,
+	"packageManager": "pnpm@10.12.1",
 	"scripts": {
 		"build": "react-router build",
 		"cf-typegen": "wrangler types && react-router typegen",
 		"check": "tsc && react-router build && wrangler deploy --dry-run",
 		"deploy": "wrangler deploy",
 		"dev": "react-router dev",
-		"preview": "npm run build && vite preview",
-		"typecheck": "npm run typegen && tsc -b"
+		"preview": "pnpm run build && vite preview",
+		"typecheck": "pnpm run typegen && tsc -b"
 	},
 	"type": "module"
 }

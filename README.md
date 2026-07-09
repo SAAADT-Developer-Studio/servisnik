@@ -25,7 +25,7 @@ A modern, production-ready template for building full-stack React applications u
 Outside of this repo, you can start a new project with this template using [C3](https://developers.cloudflare.com/pages/get-started/c3/) (the `create-cloudflare` CLI):
 
 ```bash
-npm create cloudflare@latest -- --template=cloudflare/templates/react-router-starter-template
+pnpm create cloudflare@latest -- --template=cloudflare/templates/react-router-starter-template
 ```
 
 A live public deployment of this template is available at [https://react-router-starter-template.templates.workers.dev](https://react-router-starter-template.templates.workers.dev)
@@ -35,7 +35,7 @@ A live public deployment of this template is available at [https://react-router-
 Install the dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### Development
@@ -43,7 +43,7 @@ npm install
 Start the development server with HMR:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 Your application will be available at `http://localhost:5173`.
@@ -53,7 +53,7 @@ Your application will be available at `http://localhost:5173`.
 Generate types for your Cloudflare bindings in `wrangler.json`:
 
 ```sh
-npm run typegen
+pnpm run typegen
 ```
 
 ## Building for Production
@@ -61,7 +61,7 @@ npm run typegen
 Create a production build:
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 ## Previewing the Production Build
@@ -69,7 +69,7 @@ npm run build
 Preview the production build locally:
 
 ```bash
-npm run preview
+pnpm run preview
 ```
 
 ## Deployment
@@ -79,13 +79,13 @@ If you don't have a Cloudflare account, [create one here](https://dash.cloudflar
 Once that's done, you can build your app:
 
 ```sh
-npm run build
+pnpm run build
 ```
 
 And deploy it:
 
 ```sh
-npm run deploy
+pnpm run deploy
 ```
 
 To deploy a preview URL:
