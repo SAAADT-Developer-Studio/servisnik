@@ -5,6 +5,6 @@ declare namespace Cloudflare {
 		BETTER_AUTH_URL: string;
 		GOOGLE_CLIENT_ID: string;
 		GOOGLE_CLIENT_SECRET: string;
-		TICKET_IMAGES: R2Bucket;
+		ASSETS: R2Bucket;
 	}
 }

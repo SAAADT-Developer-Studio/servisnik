@@ -6,7 +6,7 @@ declare namespace Cloudflare {
 		mainModule: typeof import("./workers/app");
 	}
 	interface Env {
-		TICKET_IMAGES: R2Bucket;
+		ASSETS: R2Bucket;
 		VALUE_FROM_CLOUDFLARE: "Hello from Cloudflare";
 		DATABASE_URL: string;
 		BETTER_AUTH_SECRET: string;

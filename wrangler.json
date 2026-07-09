@@ -13,8 +13,8 @@
 	},
 	"r2_buckets": [
 		{
-			"binding": "TICKET_IMAGES",
-			"bucket_name": "servisnik-ticket-images"
+			"binding": "ASSETS",
+			"bucket_name": "servisnik-assets"
 		}
 	]
 }

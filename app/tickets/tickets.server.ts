@@ -95,7 +95,7 @@ export async function createReport(
 		.returning({ id: ticket.id });
 
 	const uploaded = await uploadTicketImages(
-		env.TICKET_IMAGES,
+		env.ASSETS,
 		created.id,
 		input.photos,
 	);
