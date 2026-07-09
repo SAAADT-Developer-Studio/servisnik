@@ -5,6 +5,7 @@ export default [
 	route("login", "routes/login.tsx"),
 	route("admin", "routes/admin.tsx"),
 	route("owner", "routes/owner.tsx"),
+	route("owner/locations", "routes/owner.locations.tsx"),
 	route("location/:locationId/report", "routes/location.$locationId.report.tsx"),
 	route("api/auth/*", "routes/api.auth.$.ts"),
 ] satisfies RouteConfig;

@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Loader2, LogOut } from "lucide-react";
+import { Loader2, LogOut, MapPin } from "lucide-react";
 import { useState } from "react";
 
 import type { Route } from "./+types/owner";
@@ -15,8 +15,6 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { createDb } from "@/db/db.server";
-import { eq } from "drizzle-orm";
-import { userLocation } from "@/db/schema";
 
 export function meta({}: Route.MetaArgs) {
 	return [{ title: "Owner Dashboard" }];
@@ -28,10 +26,6 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 		request,
 	);
 	const db = createDb(context.cloudflare.env.DATABASE_URL);
-	const locations = await db.query.userLocation.findMany({
-		where: eq(userLocation.userId, user.id),
-		with: { location: true },
-	});
 
 	let impersonatorName: string | null = null;
 	if (impersonatedBy) {
@@ -43,14 +37,13 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 
 	return {
 		user,
-		locations: locations.map((entry) => entry.location),
 		isImpersonating: Boolean(impersonatedBy),
 		impersonatorName,
 	};
 }
 
 export default function OwnerPage({ loaderData }: Route.ComponentProps) {
-	const { user, locations, isImpersonating, impersonatorName } = loaderData;
+	const { user, isImpersonating, impersonatorName } = loaderData;
 	const [isStopping, setIsStopping] = useState(false);
 
 	async function stopImpersonating() {
@@ -123,29 +116,24 @@ export default function OwnerPage({ loaderData }: Route.ComponentProps) {
 					<CardHeader>
 						<CardTitle>Welcome, {user.name}</CardTitle>
 						<CardDescription>
-							This is the owner view. Ticket management will appear here.
+							Manage your properties and service tickets from here.
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						{locations.length === 0 ? (
-							<p className="text-sm text-muted-foreground">
-								No locations assigned yet.
-							</p>
-						) : (
-							<ul className="space-y-2">
-								{locations.map((location) => (
-									<li
-										key={location.id}
-										className="rounded-lg border bg-card px-4 py-3"
-									>
-										<p className="font-medium">{location.name}</p>
-										<p className="text-sm text-muted-foreground">
-											{location.address}
-										</p>
-									</li>
-								))}
-							</ul>
-						)}
+						<Link
+							to="/owner/locations"
+							className="flex items-center gap-4 rounded-lg border bg-card px-4 py-4 transition-colors hover:bg-muted/50"
+						>
+							<div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+								<MapPin />
+							</div>
+							<div>
+								<p className="font-medium">Locations</p>
+								<p className="text-sm text-muted-foreground">
+									View properties, add new ones, and download report QR codes.
+								</p>
+							</div>
+						</Link>
 					</CardContent>
 				</Card>
 
