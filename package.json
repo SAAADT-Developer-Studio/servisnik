@@ -14,6 +14,9 @@
 		"publish": true
 	},
 	"dependencies": {
+		"@neondatabase/serverless": "^1.1.0",
+		"better-auth": "^1.6.23",
+		"drizzle-orm": "^0.45.2",
 		"isbot": "5.1.32",
 		"react": "19.2.1",
 		"react-dom": "19.2.1",
@@ -26,6 +29,7 @@
 		"@types/node": "24.10.1",
 		"@types/react": "19.2.7",
 		"@types/react-dom": "19.2.3",
+		"drizzle-kit": "^0.31.10",
 		"tailwindcss": "4.1.17",
 		"typescript": "5.9.3",
 		"vite": "^7.0.0",
@@ -38,6 +42,9 @@
 		"build": "react-router build",
 		"cf-typegen": "wrangler types && react-router typegen",
 		"check": "tsc && react-router build && wrangler deploy --dry-run",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "drizzle-kit migrate",
+		"db:studio": "drizzle-kit studio",
 		"deploy": "wrangler deploy",
 		"dev": "react-router dev",
 		"preview": "pnpm run build && vite preview",
