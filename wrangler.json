@@ -14,7 +14,8 @@
 	"r2_buckets": [
 		{
 			"binding": "ASSETS",
-			"bucket_name": "servisnik-assets"
+			"bucket_name": "servisnik-assets",
+			"remote": true
 		}
 	]
 }
