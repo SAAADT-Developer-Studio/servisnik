@@ -1,0 +1,12 @@
+{
+  "setup-worktree-unix": [
+    "pnpm install --frozen-lockfile",
+    "test -f \"$ROOT_WORKTREE_PATH/.env\" && cp \"$ROOT_WORKTREE_PATH/.env\" .env || true",
+    "test -f \"$ROOT_WORKTREE_PATH/.dev.vars\" && cp \"$ROOT_WORKTREE_PATH/.dev.vars\" .dev.vars || true"
+  ],
+  "setup-worktree-windows": [
+    "pnpm install --frozen-lockfile",
+    "if exist \"%ROOT_WORKTREE_PATH%\\.env\" copy \"%ROOT_WORKTREE_PATH%\\.env\" .env",
+    "if exist \"%ROOT_WORKTREE_PATH%\\.dev.vars\" copy \"%ROOT_WORKTREE_PATH%\\.dev.vars\" .dev.vars"
+  ]
+}
