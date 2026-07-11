@@ -17,7 +17,9 @@ import { ClipboardList } from "lucide-react";
 
 import type { Route } from "./+types/owner";
 import { requireOwner } from "@/auth/auth-helpers.server";
+import { LocationFilter } from "@/components/location-filter";
 import { useHydrated } from "@/hooks/use-hydrated";
+import { getLocationColor } from "@/lib/location-colors";
 import { cn } from "@/lib/utils";
 import {
 	isTicketStage,
@@ -39,20 +41,6 @@ const STAGES = [
 	{ key: "IN_PROGRESS" as const, label: "V teku" },
 	{ key: "DONE" as const, label: "Končano" },
 ];
-
-const LOCATION_COLORS = [
-	"bg-emerald-500",
-	"bg-red-500",
-	"bg-amber-400",
-	"bg-blue-500",
-	"bg-violet-500",
-	"bg-pink-500",
-];
-
-function getLocationColor(locationId: string, locationIds: string[]) {
-	const index = locationIds.indexOf(locationId);
-	return LOCATION_COLORS[index % LOCATION_COLORS.length];
-}
 
 type BoardTicket = {
 	id: string;
@@ -451,22 +439,12 @@ export default function OwnerPage({ loaderData }: Route.ComponentProps) {
 		<div className="min-h-screen bg-background">
 			<main className="mx-auto max-w-6xl px-4 py-6">
 				<div className="mb-6 flex justify-end">
-					<label className="sr-only" htmlFor="location-filter">
-						Filtriraj po lokaciji
-					</label>
-					<select
-						id="location-filter"
+					<LocationFilter
+						locations={locations}
 						value={selectedLocationId}
-						onChange={(event) => setSelectedLocationId(event.target.value)}
-						className="rounded-lg bg-button px-4 py-2 text-sm font-medium text-white"
-					>
-						<option value="all">vse lokacije</option>
-						{locations.map((entry) => (
-							<option key={entry.id} value={entry.id}>
-								{entry.name}
-							</option>
-						))}
-					</select>
+						onValueChange={setSelectedLocationId}
+						className="w-full sm:max-w-xs"
+					/>
 				</div>
 
 				{pendingCount > 0 ? (

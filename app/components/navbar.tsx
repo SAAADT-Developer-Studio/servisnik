@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useRevalidator } from "react-router";
+import { Link, NavLink, useLocation, useRevalidator } from "react-router";
 import {
 	ChevronDown,
 	ClipboardList,
 	Home,
-	Loader2,
 	LogOut,
 	MapPin,
 	Menu,
@@ -13,7 +12,7 @@ import {
 } from "lucide-react";
 
 import { authClient } from "@/auth/auth.client";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ImpersonationBanner } from "@/components/impersonation-banner";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -398,6 +397,18 @@ function AppNavbar({
 	);
 }
 
+function getImpersonationViewingLabel(pathname: string) {
+	if (pathname.startsWith("/owner/approvals")) {
+		return "approvals";
+	}
+
+	if (pathname.startsWith("/owner/locations")) {
+		return "locations";
+	}
+
+	return "the dashboard";
+}
+
 export function Navbar({
 	variant = "app",
 	user = null,
@@ -405,8 +416,8 @@ export function Navbar({
 	isImpersonating = false,
 	impersonatorName = null,
 }: NavbarProps) {
+	const location = useLocation();
 	const [menuOpen, setMenuOpen] = useState(false);
-	const [isStopping, setIsStopping] = useState(false);
 
 	useEffect(() => {
 		if (!menuOpen) {
@@ -423,39 +434,14 @@ export function Navbar({
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [menuOpen]);
 
-	async function stopImpersonating() {
-		setIsStopping(true);
-
-		try {
-			await authClient.admin.stopImpersonating();
-			window.location.href = "/admin";
-		} catch {
-			setIsStopping(false);
-		}
-	}
-
 	return (
 		<>
 			{isImpersonating && user ? (
-				<Alert className="rounded-none border-x-0 border-t-0">
-					<AlertTitle>Impersonation active</AlertTitle>
-					<AlertDescription className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-						<span>
-							You are viewing the dashboard as {user.name}
-							{impersonatorName ? ` (admin: ${impersonatorName})` : ""}.
-						</span>
-						<Button
-							type="button"
-							variant="outline"
-							size="sm"
-							disabled={isStopping}
-							onClick={stopImpersonating}
-						>
-							{isStopping ? <Loader2 className="animate-spin" /> : <LogOut />}
-							Exit impersonation
-						</Button>
-					</AlertDescription>
-				</Alert>
+				<ImpersonationBanner
+					userName={user.name}
+					impersonatorName={impersonatorName}
+					viewingLabel={getImpersonationViewingLabel(location.pathname)}
+				/>
 			) : null}
 
 			{variant === "landing" ? (

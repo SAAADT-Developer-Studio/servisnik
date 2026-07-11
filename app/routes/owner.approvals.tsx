@@ -4,8 +4,10 @@ import { Check, ClipboardList, Loader2, Trash2 } from "lucide-react";
 
 import type { Route } from "./+types/owner.approvals";
 import { requireOwner } from "@/auth/auth-helpers.server";
+import { LocationFilter } from "@/components/location-filter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getLocationColor } from "@/lib/location-colors";
 import {
 	approveTicket,
 	denyTicket,
@@ -14,20 +16,6 @@ import {
 
 export function meta({}: Route.MetaArgs) {
 	return [{ title: "Odobritve – Servisnik" }];
-}
-
-const LOCATION_COLORS = [
-	"bg-emerald-500",
-	"bg-red-500",
-	"bg-amber-400",
-	"bg-blue-500",
-	"bg-violet-500",
-	"bg-pink-500",
-];
-
-function getLocationColor(locationId: string, locationIds: string[]) {
-	const index = locationIds.indexOf(locationId);
-	return LOCATION_COLORS[index % LOCATION_COLORS.length];
 }
 
 function formatDate(date: Date) {
@@ -221,22 +209,12 @@ export default function OwnerApprovalsPage({
 						) : null}
 					</div>
 
-					<label className="sr-only" htmlFor="location-filter">
-						Filtriraj po lokaciji
-					</label>
-					<select
-						id="location-filter"
+					<LocationFilter
+						locations={locations}
 						value={selectedLocationId}
-						onChange={(event) => setSelectedLocationId(event.target.value)}
-						className="rounded-lg bg-button px-4 py-2 text-sm font-medium text-white"
-					>
-						<option value="all">vse lokacije</option>
-						{locations.map((entry) => (
-							<option key={entry.id} value={entry.id}>
-								{entry.name}
-							</option>
-						))}
-					</select>
+						onValueChange={setSelectedLocationId}
+						className="w-full sm:max-w-xs"
+					/>
 				</div>
 
 				{filteredPending.length === 0 ? (
