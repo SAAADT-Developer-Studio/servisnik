@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useFetcher } from "react-router";
 import { Check, ClipboardList, Loader2, Trash2 } from "lucide-react";
 
-import type { Route } from "./+types/owner.approvals";
+import type { Route } from "./+types/owner.requests";
 import { requireOwner } from "@/auth/auth-helpers.server";
 import { LocationFilter } from "@/components/location-filter";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +15,7 @@ import {
 } from "@/tickets/tickets.server";
 
 export function meta({}: Route.MetaArgs) {
-	return [{ title: "Odobritve – Servisnik" }];
+	return [{ title: "Zahteve – Servisnik" }];
 }
 
 function formatDate(date: Date) {

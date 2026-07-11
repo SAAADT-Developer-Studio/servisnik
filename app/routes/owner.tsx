@@ -449,7 +449,7 @@ export default function OwnerPage({ loaderData }: Route.ComponentProps) {
 
 				{pendingCount > 0 ? (
 					<Link
-						to="/owner/approvals"
+						to="/owner/requests"
 						className="mb-6 flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm transition-colors hover:bg-amber-100"
 					>
 						<span className="flex items-center gap-2 font-medium text-amber-900">

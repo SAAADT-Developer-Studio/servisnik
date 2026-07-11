@@ -12,7 +12,7 @@ export default [
 		...prefix("admin", [index("routes/admin.tsx")]),
 		...prefix("owner", [
 			index("routes/owner.tsx"),
-			route("approvals", "routes/owner.approvals.tsx"),
+			route("requests", "routes/owner.requests.tsx"),
 			route("locations", "routes/owner.locations.tsx"),
 		]),
 	]),

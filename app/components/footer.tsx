@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { href, Link } from "react-router";
 
 import type { NavbarUser } from "@/components/navbar";
 
@@ -11,14 +11,14 @@ export function Footer({ user }: FooterProps) {
 
 	const navLinks =
 		user?.role === "ADMIN"
-			? [{ to: "/admin", label: "Owners" }]
+			? [{ to: href("/admin"), label: "Owners" }]
 			: user?.role === "OWNER"
 				? [
-						{ to: "/owner", label: "Nadzorna plošča" },
-						{ to: "/owner/approvals", label: "Odobritve" },
-						{ to: "/owner/locations", label: "Lokacije" },
+						{ to: href("/owner"), label: "Nadzorna plošča" },
+						{ to: href("/owner/requests"), label: "Zahteve" },
+						{ to: href("/owner/locations"), label: "Lokacije" },
 					]
-				: [{ to: "/login", label: "Prijava" }];
+				: [{ to: href("/login"), label: "Prijava" }];
 
 	return (
 		<footer
@@ -44,7 +44,7 @@ export function Footer({ user }: FooterProps) {
 				<div className="grid gap-12 lg:grid-cols-[1.35fr_0.9fr_1fr] lg:gap-10">
 					<div>
 						<Link
-							to="/"
+							to={href("/")}
 							className="inline-block rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-background"
 						>
 							<p className="font-mono text-xs font-medium tracking-[0.18em] text-background/45 uppercase">

@@ -92,7 +92,7 @@ const ADMIN_LINKS = [{ to: "/admin", label: "Owners", icon: Users }] as const;
 
 const OWNER_LINKS = [
 	{ to: "/owner", label: "Nadzorna plošča", icon: Home, end: true },
-	{ to: "/owner/approvals", label: "Odobritve", icon: ClipboardList },
+	{ to: "/owner/requests", label: "Zahteve", icon: ClipboardList },
 	{ to: "/owner/locations", label: "Lokacije", icon: MapPin },
 ] as const;
 
@@ -154,11 +154,11 @@ function AppNavLinks({
 						<>
 							{variant === "default" ? <link.icon className="size-4" /> : null}
 							{link.label}
-							{link.to === "/owner/approvals" &&
+							{link.to === "/owner/requests" &&
 							pendingCount &&
 							pendingCount > 0 ? (
 								<span
-									aria-label={`${pendingCount} pending approvals`}
+									aria-label={`${pendingCount} pending requests`}
 									className="inline-flex size-5 shrink-0 items-center justify-center rounded-sm bg-foreground text-[11px] font-medium leading-none text-background"
 								>
 									{pendingCount > 9 ? "9+" : pendingCount}
