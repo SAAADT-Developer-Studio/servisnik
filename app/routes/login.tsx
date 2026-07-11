@@ -1,24 +1,24 @@
 import { useState } from "react";
 import { Link, redirect } from "react-router";
-import { CircleAlert, Loader2 } from "lucide-react";
+import {
+	BarChart3,
+	CircleAlert,
+	ClipboardList,
+	Loader2,
+	Settings,
+	Wrench,
+} from "lucide-react";
 
 import type { Route } from "./+types/login";
+import mascotLogin from "@/assets/servisnik-login.png";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { getSessionUser } from "../auth/auth-helpers.server";
 import { authClient } from "../auth/auth.client";
 import { getDashboardHref } from "../components/navbar";
 
 export function meta({}: Route.MetaArgs) {
-	return [{ title: "Sign in" }];
+	return [{ title: "Prijava — Servisnik" }];
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {
@@ -37,6 +37,24 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 	return null;
 }
 
+const features = [
+	{
+		icon: ClipboardList,
+		title: "Hitra prijava napake",
+		description: "Par klikov in že je oddano.",
+	},
+	{
+		icon: Wrench,
+		title: "Dodelite opravila",
+		description: "Prava naloga, pravi mojster.",
+	},
+	{
+		icon: BarChart3,
+		title: "Spremljajte izvedbo",
+		description: "Vedno vemo, kje smo.",
+	},
+] as const;
+
 export default function Login() {
 	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
@@ -51,61 +69,150 @@ export default function Login() {
 				callbackURL: "/",
 			});
 		} catch {
-			setError("Could not start Google sign-in. Try again.");
+			setError("Prijava z Google računom ni uspela. Poskusite znova.");
 			setIsLoading(false);
 		}
 	}
 
 	return (
-		<main className="flex min-h-screen items-center justify-center bg-[radial-gradient(ellipse_at_top,var(--muted)_0%,var(--background)_55%)] px-4 py-16">
-			<Card className="w-full max-w-sm shadow-sm">
-				<CardHeader className="items-center gap-3 pb-1 text-center">
-					<p className="text-[11px] font-medium tracking-[0.2em] text-muted-foreground/60 uppercase">
-						Servisnik
+		<main className="grid h-screen overflow-hidden lg:grid-cols-2">
+			<section
+				aria-hidden="true"
+				className="relative hidden h-screen overflow-hidden bg-[#0b1120] lg:block"
+			>
+				<div
+					className="pointer-events-none absolute inset-0"
+					style={{
+						backgroundImage:
+							"radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)",
+						backgroundSize: "28px 28px",
+					}}
+				/>
+
+				<div className="relative z-10 px-12 pt-16 xl:px-16">
+					<div className="max-w-sm space-y-4">
+						<h2 className="text-[2.25rem] leading-[1.12] font-bold tracking-[-0.03em] text-white">
+							Vse vzdrževanje{" "}
+							<span className="text-[#ff8c00]">na enem mestu.</span>
+						</h2>
+						<p className="text-[15px] leading-relaxed text-white/55">
+							Prijavite napake, dodelite opravila in spremljajte izvedbo — brez
+							papirjev in brez zmede.
+						</p>
+					</div>
+
+					<div className="mt-8 flex items-start gap-2">
+						<ul className="max-w-sm shrink-0 space-y-4">
+							{features.map((feature) => (
+								<li key={feature.title} className="flex items-start gap-4">
+									<span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white/6 ring-1 ring-white/10">
+										<feature.icon
+											className="size-[18px] text-[#ff8c00]"
+											strokeWidth={2}
+											aria-hidden="true"
+										/>
+									</span>
+									<div className="pt-0.5">
+										<p className="text-[15px] font-semibold text-white">
+											{feature.title}
+										</p>
+										<p className="mt-0.5 text-sm text-white/45">
+											{feature.description}
+										</p>
+									</div>
+								</li>
+							))}
+						</ul>
+
+						<div className="relative -mt-4 shrink-0">
+							<div
+								aria-hidden="true"
+								className="pointer-events-none absolute bottom-4 left-1/2 size-20 -translate-x-1/2 rounded-full bg-[#ff8c00]/30 blur-2xl"
+							/>
+							<img
+								src={mascotLogin}
+								alt=""
+								className="relative ml-8 mt-5 h-[min(400px,45vh)] w-auto"
+								style={{ mixBlendMode: "lighten" }}
+							/>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section className="relative flex h-screen flex-col items-center justify-center overflow-hidden bg-[#f8f9fb] px-5 py-12 sm:px-8">
+				<div
+					className="pointer-events-none absolute inset-0"
+					style={{
+						backgroundImage:
+							"radial-gradient(circle, rgba(15,23,42,0.05) 1px, transparent 1px)",
+						backgroundSize: "28px 28px",
+					}}
+					aria-hidden="true"
+				/>
+				<Settings
+					className="pointer-events-none absolute top-6 right-6 size-36 text-foreground/4"
+					strokeWidth={1}
+					aria-hidden="true"
+				/>
+
+				<div className="relative w-full max-w-[360px]">
+					<div className="mb-10 space-y-2 text-center">
+						<h1 className="text-[2rem] font-bold tracking-[-0.03em] text-foreground">
+							Prijava
+						</h1>
+						<p className="text-sm text-muted-foreground">
+							Nadaljujte z Google računom.
+						</p>
+					</div>
+
+					<div className="space-y-4">
+						<Button
+							type="button"
+							variant="outline"
+							size="lg"
+							className="h-[52px] w-full rounded-full border-border/80 bg-white text-[15px] font-medium shadow-sm transition-shadow hover:bg-white hover:shadow-md"
+							onClick={signInWithGoogle}
+							disabled={isLoading}
+						>
+							{isLoading ? (
+								<Loader2 className="size-5 animate-spin" aria-hidden="true" />
+							) : (
+								<GoogleIcon />
+							)}
+							{isLoading ? "Preusmerjanje…" : "Nadaljuj z Google"}
+						</Button>
+
+						{error ? (
+							<Alert variant="destructive">
+								<CircleAlert />
+								<AlertTitle>Prijava ni uspela</AlertTitle>
+								<AlertDescription>{error}</AlertDescription>
+							</Alert>
+						) : null}
+					</div>
+
+					<div className="relative my-8">
+						<div className="absolute inset-0 flex items-center">
+							<div className="w-full border-t border-border/60" />
+						</div>
+						<div className="relative flex justify-center">
+							<span className="flex size-7 items-center justify-center rounded-full bg-[#f8f9fb] text-xs text-muted-foreground/60 ring-1 ring-border/50">
+								ali
+							</span>
+						</div>
+					</div>
+
+					<p className="text-center">
+						<Link
+							to="/"
+							className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+						>
+							Nazaj na domačo stran
+						</Link>
 					</p>
-					<CardTitle className="text-3xl font-semibold tracking-tight">
-						Sign in
-					</CardTitle>
-					<CardDescription className="text-sm leading-relaxed">
-						Use your Google account to continue.
-					</CardDescription>
-				</CardHeader>
-
-				<CardContent className="space-y-4">
-					<Button
-						type="button"
-						variant="outline"
-						size="lg"
-						className="h-11 w-full"
-						onClick={signInWithGoogle}
-						disabled={isLoading}
-					>
-						{isLoading ? (
-							<Loader2 className="size-5 animate-spin" aria-hidden="true" />
-						) : (
-							<GoogleIcon />
-						)}
-						{isLoading ? "Redirecting…" : "Continue with Google"}
-					</Button>
-
-					{error ? (
-						<Alert variant="destructive">
-							<CircleAlert />
-							<AlertTitle>Sign-in failed</AlertTitle>
-							<AlertDescription>{error}</AlertDescription>
-						</Alert>
-					) : null}
-				</CardContent>
-
-				<CardFooter className="justify-center">
-					<Link
-						to="/"
-						className="text-xs text-muted-foreground/70 underline-offset-4 hover:text-foreground hover:underline"
-					>
-						Back to home
-					</Link>
-				</CardFooter>
-			</Card>
+				</div>
+			</section>
 		</main>
 	);
 }
