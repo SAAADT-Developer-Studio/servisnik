@@ -34,7 +34,6 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { createDb } from "@/db/db.server";
 import { user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -43,11 +42,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {
-	const { user: adminUser } = await requireAdmin(
-		context.cloudflare.env,
-		request,
-	);
-	const db = createDb(context.cloudflare.env.DATABASE_URL);
+	const { user: adminUser, db } = await requireAdmin(context, request);
 	const owners = await db.query.user.findMany({
 		where: eq(user.role, "OWNER"),
 		orderBy: (users, { desc }) => [desc(users.createdAt)],
@@ -57,7 +52,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
-	const { auth } = await requireAdmin(context.cloudflare.env, request);
+	const { auth } = await requireAdmin(context, request);
 	const formData = await request.formData();
 	const intent = formData.get("intent");
 

@@ -29,7 +29,6 @@ import { authClient } from "@/auth/auth.client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { createDb } from "@/db/db.server";
 import { cn } from "@/lib/utils";
 import { isTicketStage, getTicketStage, type TicketStage } from "@/tickets/tickets";
 import {
@@ -91,11 +90,7 @@ function groupTicketsByStage(tickets: BoardTicket[]) {
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {
-	const { user, impersonatedBy } = await requireOwner(
-		context.cloudflare.env,
-		request,
-	);
-	const db = createDb(context.cloudflare.env.DATABASE_URL);
+	const { user, db, impersonatedBy } = await requireOwner(context, request);
 	const { approved } = await getOwnerBoardTickets(db, user.id);
 	const pendingCount = await getOwnerPendingTicketCount(db, user.id);
 
@@ -127,11 +122,10 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
-	const { user } = await requireOwner(context.cloudflare.env, request);
+	const { user, db } = await requireOwner(context, request);
 	const formData = await request.formData();
 	const intent = formData.get("intent");
 	const ticketId = String(formData.get("ticketId") ?? "");
-	const db = createDb(context.cloudflare.env.DATABASE_URL);
 
 	if (!ticketId) {
 		return { error: "Manjkajoči podatki." };

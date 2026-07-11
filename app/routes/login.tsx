@@ -14,14 +14,14 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { authClient } from "../auth/auth.client";
-import { createAuth } from "../auth/auth.server";
+import { getAppContext } from "../context.server";
 
 export function meta({}: Route.MetaArgs) {
 	return [{ title: "Sign in" }];
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {
-	const auth = createAuth(context.cloudflare.env);
+	const { auth } = getAppContext(context);
 	const session = await auth.api.getSession({ headers: request.headers });
 
 	if (session) {

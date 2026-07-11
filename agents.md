@@ -14,3 +14,4 @@
 - Auth routes under `/api/auth/*`
 - Use `pnpm` for all package and script commands (e.g. `pnpm install`, `pnpm dev`)
 - Keep changes minimal and match existing patterns
+- use getAppContext in actions/loaders to get any global bindings, like auth, db, env, cloudflare, ...

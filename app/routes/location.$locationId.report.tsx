@@ -18,6 +18,7 @@ import {
 	getLocationForReport,
 	parseReportForm,
 } from "../tickets/tickets.server";
+import { getAppContext } from "../context.server";
 
 type ReportActionData =
 	| { ok: true; ticketId: string }
@@ -31,21 +32,19 @@ type ReportLoaderData = {
 	};
 };
 
-export function meta({ data }: Route.MetaArgs) {
+export function meta({ loaderData }: Route.MetaArgs) {
 	return [
 		{
-			title: data?.location
-				? `Report issue — ${data.location.name}`
+			title: loaderData?.location
+				? `Report issue — ${loaderData.location.name}`
 				: "Report issue",
 		},
 	];
 }
 
 export async function loader({ context, params }: Route.LoaderArgs) {
-	const locationData = await getLocationForReport(
-		context.cloudflare.env.DATABASE_URL,
-		params.locationId,
-	);
+	const { db } = getAppContext(context);
+	const locationData = await getLocationForReport(db, params.locationId);
 
 	if (!locationData) {
 		throw data({ message: "Location not found." }, { status: 404 });
@@ -63,7 +62,8 @@ export async function action({ context, params, request }: Route.ActionArgs): Pr
 		return { ok: false as const, fieldErrors };
 	}
 
-	const result = await createReport(context.cloudflare.env, {
+	const { db, env } = getAppContext(context);
+	const result = await createReport(db, env.ASSETS, {
 		locationId: params.locationId,
 		reporterName,
 		roomNumber,

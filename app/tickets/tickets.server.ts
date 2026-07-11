@@ -1,14 +1,12 @@
 import { and, desc, eq, sql } from "drizzle-orm";
 
-import { createDb } from "../db/db.server";
+import type { Db } from "../db/db.server";
 import { location, ticket, ticketImage, user, userLocation } from "../db/schema";
 import { parsePhotoFiles, uploadTicketImages } from "../storage/images.server";
 import { isTicketStage, type TicketStage } from "./tickets";
 
 export type { TicketStage } from "./tickets";
 export { isTicketStage } from "./tickets";
-
-type Db = ReturnType<typeof createDb>;
 
 type CreateReportInput = {
 	locationId: string;
@@ -44,18 +42,13 @@ export function parseReportForm(formData: FormData) {
 	return { reporterName, roomNumber, description, photos, fieldErrors };
 }
 
-export async function getLocationForReport(
-	databaseUrl: string,
-	locationId: string,
-) {
-	const db = createDb(databaseUrl);
-
+export async function getLocationForReport(db: Db, locationId: string) {
 	return db.query.location.findFirst({
 		where: eq(location.id, locationId),
 	});
 }
 
-async function findLocationOwnerId(db: ReturnType<typeof createDb>, locationId: string) {
+async function findLocationOwnerId(db: Db, locationId: string) {
 	const owner = await db
 		.select({ id: user.id })
 		.from(userLocation)
@@ -78,10 +71,10 @@ async function findLocationOwnerId(db: ReturnType<typeof createDb>, locationId: 
 }
 
 export async function createReport(
-	env: Cloudflare.Env,
+	db: Db,
+	assets: R2Bucket,
 	input: CreateReportInput,
 ) {
-	const db = createDb(env.DATABASE_URL);
 	const ownerId = await findLocationOwnerId(db, input.locationId);
 
 	if (!ownerId) {
@@ -101,7 +94,7 @@ export async function createReport(
 		.returning({ id: ticket.id });
 
 	const uploaded = await uploadTicketImages(
-		env.ASSETS,
+		assets,
 		created.id,
 		input.photos,
 	);

@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 import type { Route } from "./+types/home";
 import { authClient } from "../auth/auth.client";
-import { createAuth } from "../auth/auth.server";
+import { getAppContext } from "../context.server";
 import { Welcome } from "../welcome/welcome";
 
 export function meta({}: Route.MetaArgs) {
@@ -13,11 +13,11 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {
-	const auth = createAuth(context.cloudflare.env);
+	const { auth, env } = getAppContext(context);
 	const session = await auth.api.getSession({ headers: request.headers });
 
 	return {
-		message: context.cloudflare.env.VALUE_FROM_CLOUDFLARE,
+		message: env.VALUE_FROM_CLOUDFLARE,
 		user: session?.user ?? null,
 	};
 }

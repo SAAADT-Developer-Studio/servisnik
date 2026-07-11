@@ -34,9 +34,9 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { createDb } from "@/db/db.server";
 import { location, userLocation } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { getAppContext } from "@/context.server";
 
 export function meta({}: Route.MetaArgs) {
 	return [{ title: "Locations" }];
@@ -47,11 +47,7 @@ function getReportUrl(appUrl: string, locationId: string) {
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {
-	const { user, impersonatedBy } = await requireOwner(
-		context.cloudflare.env,
-		request,
-	);
-	const db = createDb(context.cloudflare.env.DATABASE_URL);
+	const { user, db, impersonatedBy } = await requireOwner(context, request);
 	const entries = await db.query.userLocation.findMany({
 		where: eq(userLocation.userId, user.id),
 		with: { location: true },
@@ -71,8 +67,9 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 		impersonatorName = impersonator?.name ?? null;
 	}
 
+	const { env } = getAppContext(context);
 	const appUrl =
-		context.cloudflare.env.BETTER_AUTH_URL ||
+		env.BETTER_AUTH_URL ||
 		new URL(request.url).origin;
 
 	return {
@@ -85,7 +82,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
-	const { user } = await requireOwner(context.cloudflare.env, request);
+	const { user, db } = await requireOwner(context, request);
 	const formData = await request.formData();
 	const intent = formData.get("intent");
 
@@ -96,8 +93,6 @@ export async function action({ context, request }: Route.ActionArgs) {
 		if (!name || !address) {
 			return { error: "Name and address are required." };
 		}
-
-		const db = createDb(context.cloudflare.env.DATABASE_URL);
 
 		const [newLocation] = await db
 			.insert(location)
