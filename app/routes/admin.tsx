@@ -72,6 +72,9 @@ export async function action({ context, request }: Route.ActionArgs) {
 					name,
 					email,
 					role: "OWNER",
+					data: {
+						emailVerified: true,
+					},
 				},
 				headers: request.headers,
 			});
@@ -86,7 +89,7 @@ export async function action({ context, request }: Route.ActionArgs) {
 }
 
 export default function AdminPage({ loaderData }: Route.ComponentProps) {
-	const { adminUser, owners } = loaderData;
+	const { owners } = loaderData;
 	const fetcher = useFetcher<typeof action>();
 	const navigation = useNavigation();
 	const [dialogOpen, setDialogOpen] = useState(false);
@@ -129,30 +132,6 @@ export default function AdminPage({ loaderData }: Route.ComponentProps) {
 
 	return (
 		<div className="min-h-screen bg-background">
-			<header className="border-b">
-				<div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-					<div>
-						<p className="text-[11px] font-medium tracking-[0.2em] text-muted-foreground/60 uppercase">
-							Servisnik
-						</p>
-						<h1 className="text-xl font-semibold tracking-tight">Admin</h1>
-					</div>
-					<div className="flex items-center gap-3">
-						<span className="text-sm text-muted-foreground">
-							{adminUser.name}
-						</span>
-						<Button
-							type="button"
-							variant="outline"
-							size="sm"
-							onClick={() => authClient.signOut()}
-						>
-							Sign out
-						</Button>
-					</div>
-				</div>
-			</header>
-
 			<main className="mx-auto max-w-5xl px-4 py-8">
 				<Card>
 					<CardHeader className="flex flex-row items-start justify-between gap-4">
