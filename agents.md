@@ -15,3 +15,7 @@
 - Use `pnpm` for all package and script commands (e.g. `pnpm install`, `pnpm dev`)
 - Keep changes minimal and match existing patterns
 - use getAppContext in actions/loaders to get any global bindings, like auth, db, env, cloudflare, ...
+
+## Rules
+
+- Whenever you introduce a change or feature that impacts all developers or project workflows, document it as a rule in agents.md. This ensures all team members are informed of global practices, standards, or requirements.
