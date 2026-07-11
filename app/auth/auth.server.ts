@@ -14,6 +14,11 @@ export function createAuth(env: Env, db: Db) {
 			provider: "pg",
 			schema,
 		}),
+		account: {
+			accountLinking: {
+				trustedProviders: ["google"],
+			},
+		},
 		socialProviders: {
 			google: {
 				clientId: env.GOOGLE_CLIENT_ID,

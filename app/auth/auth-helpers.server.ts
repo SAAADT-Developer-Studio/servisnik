@@ -4,6 +4,39 @@ import { redirect, type RouterContextProvider } from "react-router";
 import { getAppContext } from "../context.server";
 import { user } from "../db/schema";
 
+export async function getSessionUser(
+	context: Readonly<RouterContextProvider>,
+	request: Request,
+) {
+	const { auth, db } = getAppContext(context);
+	const session = await auth.api.getSession({ headers: request.headers });
+
+	if (!session) {
+		return null;
+	}
+
+	const dbUser = await db.query.user.findFirst({
+		where: eq(user.id, session.user.id),
+	});
+
+	if (!dbUser) {
+		return null;
+	}
+
+	const impersonatedBy =
+		"impersonatedBy" in session.session
+			? (session.session.impersonatedBy as string | null | undefined)
+			: null;
+
+	return {
+		auth,
+		session,
+		user: dbUser,
+		db,
+		impersonatedBy: impersonatedBy ?? null,
+	};
+}
+
 export async function requireSession(
 	context: Readonly<RouterContextProvider>,
 	request: Request,

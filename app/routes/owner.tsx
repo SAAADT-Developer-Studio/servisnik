@@ -13,22 +13,10 @@ import {
 	type DragStartEvent,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import {
-	ClipboardList,
-	Home,
-	Loader2,
-	LogOut,
-	MapPin,
-	Menu,
-	Wrench,
-} from "lucide-react";
+import { ClipboardList } from "lucide-react";
 
 import type { Route } from "./+types/owner";
 import { requireOwner } from "@/auth/auth-helpers.server";
-import { authClient } from "@/auth/auth.client";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { cn } from "@/lib/utils";
 import {
@@ -441,17 +429,8 @@ function KanbanBoard({
 }
 
 export default function OwnerPage({ loaderData }: Route.ComponentProps) {
-	const {
-		user,
-		locations,
-		pendingCount,
-		approved,
-		isImpersonating,
-		impersonatorName,
-	} = loaderData;
-	const [menuOpen, setMenuOpen] = useState(false);
+	const { locations, pendingCount, approved } = loaderData;
 	const [selectedLocationId, setSelectedLocationId] = useState("all");
-	const [isStopping, setIsStopping] = useState(false);
 
 	const locationIds = useMemo(
 		() => locations.map((entry) => entry.id),
@@ -468,132 +447,8 @@ export default function OwnerPage({ loaderData }: Route.ComponentProps) {
 		);
 	}, [approved, selectedLocationId]);
 
-	useEffect(() => {
-		if (!menuOpen) {
-			return;
-		}
-
-		function handleKeyDown(event: KeyboardEvent) {
-			if (event.key === "Escape") {
-				setMenuOpen(false);
-			}
-		}
-
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [menuOpen]);
-
-	async function stopImpersonating() {
-		setIsStopping(true);
-
-		try {
-			await authClient.admin.stopImpersonating();
-			window.location.href = "/admin";
-		} catch {
-			setIsStopping(false);
-		}
-	}
-
 	return (
 		<div className="min-h-screen bg-background">
-			{isImpersonating ? (
-				<Alert className="rounded-none border-x-0 border-t-0">
-					<AlertTitle>Impersonation active</AlertTitle>
-					<AlertDescription className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-						<span>
-							You are viewing the dashboard as {user.name}
-							{impersonatorName ? ` (admin: ${impersonatorName})` : ""}.
-						</span>
-						<Button
-							type="button"
-							variant="outline"
-							size="sm"
-							disabled={isStopping}
-							onClick={stopImpersonating}
-						>
-							{isStopping ? <Loader2 className="animate-spin" /> : <LogOut />}
-							Exit impersonation
-						</Button>
-					</AlertDescription>
-				</Alert>
-			) : null}
-
-			<header className="border-b bg-white">
-				<div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-					<div className="flex items-center gap-2">
-						<div className="relative flex size-8 items-center justify-center">
-							<Home className="size-7 text-foreground" strokeWidth={1.75} />
-							<Wrench
-								className="absolute -right-0.5 -bottom-0.5 size-3.5 text-foreground"
-								strokeWidth={2}
-							/>
-						</div>
-						<span className="text-lg font-semibold tracking-tight">
-							servisnik
-						</span>
-					</div>
-
-					<div className="relative">
-						<Button
-							type="button"
-							variant="ghost"
-							size="icon"
-							aria-expanded={menuOpen}
-							aria-label="Meni"
-							onClick={() => setMenuOpen((open) => !open)}
-						>
-							<Menu />
-						</Button>
-
-						{menuOpen ? (
-							<>
-								<button
-									type="button"
-									className="fixed inset-0 z-40 cursor-default bg-transparent"
-									aria-label="Zapri meni"
-									onClick={() => setMenuOpen(false)}
-								/>
-								<nav className="absolute top-full right-0 z-50 mt-2 w-52 rounded-lg border bg-white py-1 shadow-lg">
-									<Link
-										to="/owner/approvals"
-										className="flex items-center justify-between gap-2 px-4 py-2 text-sm hover:bg-muted"
-										onClick={() => setMenuOpen(false)}
-									>
-										<span className="flex items-center gap-2">
-											<ClipboardList className="size-4" />
-											Odobritve
-										</span>
-										{pendingCount > 0 ? (
-											<Badge variant="secondary" className="text-xs">
-												{pendingCount}
-											</Badge>
-										) : null}
-									</Link>
-									<Link
-										to="/owner/locations"
-										className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-muted"
-										onClick={() => setMenuOpen(false)}
-									>
-										<MapPin className="size-4" />
-										Lokacije
-									</Link>
-									{!isImpersonating ? (
-										<button
-											type="button"
-											className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-muted"
-											onClick={() => authClient.signOut()}
-										>
-											<LogOut className="size-4" />
-											Odjava
-										</button>
-									) : null}
-								</nav>
-							</>
-						) : null}
-					</div>
-				</div>
-			</header>
-
 			<main className="mx-auto max-w-6xl px-4 py-6">
 				<div className="mb-6 flex justify-end">
 					<label className="sr-only" htmlFor="location-filter">
