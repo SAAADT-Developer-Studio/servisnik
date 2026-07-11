@@ -2,15 +2,15 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
 
-import { createDb } from "../db/db.server";
+import type { Db } from "../db/db.server";
 import * as schema from "../db/schema";
 import { ac, adminRole, ownerRole } from "./permissions.server";
 
-export function createAuth(env: Env) {
+export function createAuth(env: Env, db: Db) {
 	return betterAuth({
 		baseURL: env.BETTER_AUTH_URL,
 		secret: env.BETTER_AUTH_SECRET,
-		database: drizzleAdapter(createDb(env.DATABASE_URL), {
+		database: drizzleAdapter(db, {
 			provider: "pg",
 			schema,
 		}),
@@ -43,3 +43,5 @@ export function createAuth(env: Env) {
 		],
 	});
 }
+
+export type Auth = ReturnType<typeof createAuth>;

@@ -1,0 +1,9 @@
+node_modules
+.cursor
+build
+.react-router
+.wrangler
+dist
+pnpm-lock.yaml
+worker-configuration.d.ts
+drizzle/meta

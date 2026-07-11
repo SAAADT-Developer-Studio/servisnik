@@ -1,6 +1,11 @@
 const MAX_PHOTOS = 5;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/heic"]);
+const ALLOWED_TYPES = new Set([
+	"image/jpeg",
+	"image/png",
+	"image/webp",
+	"image/heic",
+]);
 
 function extensionForType(type: string) {
 	switch (type) {
@@ -21,7 +26,9 @@ export function parsePhotoFiles(formData: FormData) {
 	return formData
 		.getAll("photos")
 		.filter((entry): entry is File => entry instanceof File && entry.size > 0)
-		.filter((file) => ALLOWED_TYPES.has(file.type) && file.size <= MAX_FILE_SIZE)
+		.filter(
+			(file) => ALLOWED_TYPES.has(file.type) && file.size <= MAX_FILE_SIZE,
+		)
 		.slice(0, MAX_PHOTOS);
 }
 

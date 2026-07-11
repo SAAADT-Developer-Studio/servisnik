@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useFetcher } from "react-router";
-import { CircleAlert, Download, Loader2, LogOut, MapPin, Plus } from "lucide-react";
+import {
+	CircleAlert,
+	Download,
+	Loader2,
+	LogOut,
+	MapPin,
+	Plus,
+} from "lucide-react";
 import QRCode from "qrcode";
 
 import type { Route } from "./+types/owner.locations";
@@ -34,9 +41,9 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { createDb } from "@/db/db.server";
 import { location, userLocation } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { getAppContext } from "@/context.server";
 
 export function meta({}: Route.MetaArgs) {
 	return [{ title: "Locations" }];
@@ -47,11 +54,7 @@ function getReportUrl(appUrl: string, locationId: string) {
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {
-	const { user, impersonatedBy } = await requireOwner(
-		context.cloudflare.env,
-		request,
-	);
-	const db = createDb(context.cloudflare.env.DATABASE_URL);
+	const { user, db, impersonatedBy } = await requireOwner(context, request);
 	const entries = await db.query.userLocation.findMany({
 		where: eq(userLocation.userId, user.id),
 		with: { location: true },
@@ -59,9 +62,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 
 	const locations = entries
 		.map((entry) => entry.location)
-		.sort(
-			(a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-		);
+		.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
 	let impersonatorName: string | null = null;
 	if (impersonatedBy) {
@@ -71,9 +72,8 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 		impersonatorName = impersonator?.name ?? null;
 	}
 
-	const appUrl =
-		context.cloudflare.env.BETTER_AUTH_URL ||
-		new URL(request.url).origin;
+	const { env } = getAppContext(context);
+	const appUrl = env.BETTER_AUTH_URL || new URL(request.url).origin;
 
 	return {
 		user,
@@ -85,7 +85,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
-	const { user } = await requireOwner(context.cloudflare.env, request);
+	const { user, db } = await requireOwner(context, request);
 	const formData = await request.formData();
 	const intent = formData.get("intent");
 
@@ -96,8 +96,6 @@ export async function action({ context, request }: Route.ActionArgs) {
 		if (!name || !address) {
 			return { error: "Name and address are required." };
 		}
-
-		const db = createDb(context.cloudflare.env.DATABASE_URL);
 
 		const [newLocation] = await db
 			.insert(location)
@@ -123,7 +121,9 @@ async function downloadQrCode(url: string, filename: string) {
 	link.click();
 }
 
-export default function OwnerLocationsPage({ loaderData }: Route.ComponentProps) {
+export default function OwnerLocationsPage({
+	loaderData,
+}: Route.ComponentProps) {
 	const { user, locations, appUrl, isImpersonating, impersonatorName } =
 		loaderData;
 	const fetcher = useFetcher<typeof action>();
@@ -184,11 +184,7 @@ export default function OwnerLocationsPage({ loaderData }: Route.ComponentProps)
 							disabled={isStopping}
 							onClick={stopImpersonating}
 						>
-							{isStopping ? (
-								<Loader2 className="animate-spin" />
-							) : (
-								<LogOut />
-							)}
+							{isStopping ? <Loader2 className="animate-spin" /> : <LogOut />}
 							Exit impersonation
 						</Button>
 					</AlertDescription>
@@ -250,8 +246,8 @@ export default function OwnerLocationsPage({ loaderData }: Route.ComponentProps)
 								<DialogHeader>
 									<DialogTitle>Create location</DialogTitle>
 									<DialogDescription>
-										Add a property location. A QR code will link visitors to
-										the report page for that location.
+										Add a property location. A QR code will link visitors to the
+										report page for that location.
 									</DialogDescription>
 								</DialogHeader>
 

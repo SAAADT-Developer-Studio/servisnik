@@ -29,9 +29,12 @@ import { authClient } from "@/auth/auth.client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { createDb } from "@/db/db.server";
 import { cn } from "@/lib/utils";
-import { isTicketStage, getTicketStage, type TicketStage } from "@/tickets/tickets";
+import {
+	isTicketStage,
+	getTicketStage,
+	type TicketStage,
+} from "@/tickets/tickets";
 import {
 	getOwnerBoardTickets,
 	getOwnerPendingTicketCount,
@@ -91,11 +94,7 @@ function groupTicketsByStage(tickets: BoardTicket[]) {
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {
-	const { user, impersonatedBy } = await requireOwner(
-		context.cloudflare.env,
-		request,
-	);
-	const db = createDb(context.cloudflare.env.DATABASE_URL);
+	const { user, db, impersonatedBy } = await requireOwner(context, request);
 	const { approved } = await getOwnerBoardTickets(db, user.id);
 	const pendingCount = await getOwnerPendingTicketCount(db, user.id);
 
@@ -127,11 +126,10 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
-	const { user } = await requireOwner(context.cloudflare.env, request);
+	const { user, db } = await requireOwner(context, request);
 	const formData = await request.formData();
 	const intent = formData.get("intent");
 	const ticketId = String(formData.get("ticketId") ?? "");
-	const db = createDb(context.cloudflare.env.DATABASE_URL);
 
 	if (!ticketId) {
 		return { error: "Manjkajoči podatki." };
@@ -144,7 +142,9 @@ export async function action({ context, request }: Route.ActionArgs) {
 		}
 
 		const updated = await updateTicketStage(db, ticketId, user.id, stage);
-		return updated ? { success: true } : { error: "Faze ni bilo mogoče posodobiti." };
+		return updated
+			? { success: true }
+			: { error: "Faze ni bilo mogoče posodobiti." };
 	}
 
 	return { error: "Neznano dejanje." };
@@ -173,7 +173,9 @@ function TicketCardContent({
 					Soba {ticket.roomNumber}
 				</span>
 			</div>
-			<p className="mt-2 text-sm text-muted-foreground">{ticket.reporterName}</p>
+			<p className="mt-2 text-sm text-muted-foreground">
+				{ticket.reporterName}
+			</p>
 		</>
 	);
 }
@@ -306,7 +308,11 @@ function KanbanBoard({
 		const newStage = String(over.id);
 		const currentStage = active.data.current?.stage as TicketStage | undefined;
 
-		if (!currentStage || !isTicketStage(newStage) || newStage === currentStage) {
+		if (
+			!currentStage ||
+			!isTicketStage(newStage) ||
+			newStage === currentStage
+		) {
 			return;
 		}
 
@@ -442,11 +448,7 @@ export default function OwnerPage({ loaderData }: Route.ComponentProps) {
 							disabled={isStopping}
 							onClick={stopImpersonating}
 						>
-							{isStopping ? (
-								<Loader2 className="animate-spin" />
-							) : (
-								<LogOut />
-							)}
+							{isStopping ? <Loader2 className="animate-spin" /> : <LogOut />}
 							Exit impersonation
 						</Button>
 					</AlertDescription>
@@ -463,7 +465,9 @@ export default function OwnerPage({ loaderData }: Route.ComponentProps) {
 								strokeWidth={2}
 							/>
 						</div>
-						<span className="text-lg font-semibold tracking-tight">servisnik</span>
+						<span className="text-lg font-semibold tracking-tight">
+							servisnik
+						</span>
 					</div>
 
 					<div className="relative">

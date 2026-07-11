@@ -1,6 +1,6 @@
 {
 	"name": "servisnik",
-	"description": "Build a full-stack web application with React Router 7.",
+	"description": "Build a full-stack web application with React Router 8.",
 	"cloudflare": {
 		"label": "React Router Framework Starter",
 		"products": [
@@ -26,34 +26,40 @@
 		"isbot": "5.1.32",
 		"lucide-react": "^1.24.0",
 		"qrcode": "^1.5.4",
-		"react": "19.2.1",
-		"react-dom": "19.2.1",
-		"react-router": "7.9.6",
+		"react": "19.2.7",
+		"react-dom": "19.2.7",
+		"react-router": "8.2.0",
 		"shadcn": "^4.13.0",
 		"tailwind-merge": "^3.6.0",
-		"tw-animate-css": "^1.4.0"
+		"tw-animate-css": "^1.4.0",
+		"zod": "^4.4.3"
 	},
 	"devDependencies": {
-		"@cloudflare/vite-plugin": "1.15.3",
-		"@react-router/dev": "7.9.6",
+		"@cloudflare/vite-plugin": "1.44.0",
+		"@cloudflare/workers-types": "^5.20260710.1",
+		"@react-router/dev": "8.2.0",
 		"@tailwindcss/vite": "4.1.17",
 		"@types/node": "24.10.1",
 		"@types/qrcode": "^1.5.6",
 		"@types/react": "19.2.7",
 		"@types/react-dom": "19.2.3",
 		"drizzle-kit": "^0.31.10",
+		"prettier": "^3.9.5",
 		"tailwindcss": "4.1.17",
-		"typescript": "5.9.3",
+		"typescript": "7.0.2",
 		"vite": "^7.0.0",
 		"vite-plugin-devtools-json": "^1.0.0",
 		"vite-tsconfig-paths": "5.1.4",
-		"wrangler": "4.88.0"
+		"wrangler": "4.110.0"
 	},
 	"private": true,
 	"packageManager": "pnpm@10.12.1",
+	"engines": {
+		"node": ">=22.22.0"
+	},
 	"scripts": {
 		"build": "react-router build",
-		"cf-typegen": "wrangler types && react-router typegen",
+		"typegen": "wrangler types && react-router typegen",
 		"check": "tsc && react-router build && wrangler deploy --dry-run",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
@@ -61,6 +67,7 @@
 		"deploy": "wrangler deploy",
 		"dev": "react-router dev",
 		"preview": "pnpm run build && vite preview",
+		"format": "prettier --write .",
 		"typecheck": "pnpm run typegen && tsc -b"
 	},
 	"type": "module"

@@ -1,14 +1,18 @@
 import { and, desc, eq, sql } from "drizzle-orm";
 
-import { createDb } from "../db/db.server";
-import { location, ticket, ticketImage, user, userLocation } from "../db/schema";
+import type { Db } from "../db/db.server";
+import {
+	location,
+	ticket,
+	ticketImage,
+	user,
+	userLocation,
+} from "../db/schema";
 import { parsePhotoFiles, uploadTicketImages } from "../storage/images.server";
 import { isTicketStage, type TicketStage } from "./tickets";
 
 export type { TicketStage } from "./tickets";
 export { isTicketStage } from "./tickets";
-
-type Db = ReturnType<typeof createDb>;
 
 type CreateReportInput = {
 	locationId: string;
@@ -19,8 +23,7 @@ type CreateReportInput = {
 };
 
 export type CreateReportResult =
-	| { ok: true; ticketId: string }
-	| { ok: false; error: string };
+	{ ok: true; ticketId: string } | { ok: false; error: string };
 
 export function parseReportForm(formData: FormData) {
 	const reporterName = formData.get("reporterName")?.toString().trim() ?? "";
@@ -44,18 +47,13 @@ export function parseReportForm(formData: FormData) {
 	return { reporterName, roomNumber, description, photos, fieldErrors };
 }
 
-export async function getLocationForReport(
-	databaseUrl: string,
-	locationId: string,
-) {
-	const db = createDb(databaseUrl);
-
+export async function getLocationForReport(db: Db, locationId: string) {
 	return db.query.location.findFirst({
 		where: eq(location.id, locationId),
 	});
 }
 
-async function findLocationOwnerId(db: ReturnType<typeof createDb>, locationId: string) {
+async function findLocationOwnerId(db: Db, locationId: string) {
 	const owner = await db
 		.select({ id: user.id })
 		.from(userLocation)
@@ -78,14 +76,17 @@ async function findLocationOwnerId(db: ReturnType<typeof createDb>, locationId: 
 }
 
 export async function createReport(
-	env: Cloudflare.Env,
+	db: Db,
+	assets: R2Bucket,
 	input: CreateReportInput,
 ) {
-	const db = createDb(env.DATABASE_URL);
 	const ownerId = await findLocationOwnerId(db, input.locationId);
 
 	if (!ownerId) {
-		return { ok: false as const, error: "This location is not set up to receive reports." };
+		return {
+			ok: false as const,
+			error: "This location is not set up to receive reports.",
+		};
 	}
 
 	const [created] = await db
@@ -100,11 +101,7 @@ export async function createReport(
 		})
 		.returning({ id: ticket.id });
 
-	const uploaded = await uploadTicketImages(
-		env.ASSETS,
-		created.id,
-		input.photos,
-	);
+	const uploaded = await uploadTicketImages(assets, created.id, input.photos);
 
 	if (uploaded.length > 0) {
 		await db.insert(ticketImage).values(

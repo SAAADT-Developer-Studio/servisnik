@@ -34,7 +34,6 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { createDb } from "@/db/db.server";
 import { user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -43,11 +42,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {
-	const { user: adminUser } = await requireAdmin(
-		context.cloudflare.env,
-		request,
-	);
-	const db = createDb(context.cloudflare.env.DATABASE_URL);
+	const { user: adminUser, db } = await requireAdmin(context, request);
 	const owners = await db.query.user.findMany({
 		where: eq(user.role, "OWNER"),
 		orderBy: (users, { desc }) => [desc(users.createdAt)],
@@ -57,13 +52,15 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
-	const { auth } = await requireAdmin(context.cloudflare.env, request);
+	const { auth } = await requireAdmin(context, request);
 	const formData = await request.formData();
 	const intent = formData.get("intent");
 
 	if (intent === "create-owner") {
 		const name = String(formData.get("name") ?? "").trim();
-		const email = String(formData.get("email") ?? "").trim().toLowerCase();
+		const email = String(formData.get("email") ?? "")
+			.trim()
+			.toLowerCase();
 
 		if (!name || !email) {
 			return { error: "Name and email are required." };
@@ -111,10 +108,14 @@ export default function AdminPage({ loaderData }: Route.ComponentProps) {
 		setImpersonatingId(ownerId);
 
 		try {
-			const result = await authClient.admin.impersonateUser({ userId: ownerId });
+			const result = await authClient.admin.impersonateUser({
+				userId: ownerId,
+			});
 
 			if (result.error) {
-				setImpersonateError(result.error.message ?? "Could not impersonate owner.");
+				setImpersonateError(
+					result.error.message ?? "Could not impersonate owner.",
+				);
 				setImpersonatingId(null);
 				return;
 			}
@@ -137,7 +138,9 @@ export default function AdminPage({ loaderData }: Route.ComponentProps) {
 						<h1 className="text-xl font-semibold tracking-tight">Admin</h1>
 					</div>
 					<div className="flex items-center gap-3">
-						<span className="text-sm text-muted-foreground">{adminUser.name}</span>
+						<span className="text-sm text-muted-foreground">
+							{adminUser.name}
+						</span>
 						<Button
 							type="button"
 							variant="outline"
@@ -269,7 +272,9 @@ export default function AdminPage({ loaderData }: Route.ComponentProps) {
 								<TableBody>
 									{owners.map((owner) => (
 										<TableRow key={owner.id}>
-											<TableCell className="font-medium">{owner.name}</TableCell>
+											<TableCell className="font-medium">
+												{owner.name}
+											</TableCell>
 											<TableCell>{owner.email}</TableCell>
 											<TableCell>
 												{owner.banned ? (

@@ -1,26 +1,24 @@
 import type { Route } from "./+types/api.ticket-images.$imageId";
 import { requireOwner } from "@/auth/auth-helpers.server";
-import { createDb } from "@/db/db.server";
+import { getAppContext } from "@/context.server";
 import { getTicketImageForOwner } from "@/tickets/tickets.server";
 
 export async function loader({ context, request, params }: Route.LoaderArgs) {
-	const { user } = await requireOwner(context.cloudflare.env, request);
+	const { user, db } = await requireOwner(context, request);
 	const imageId = params.imageId;
 
 	if (!imageId) {
 		throw new Response("Not found", { status: 404 });
 	}
 
-	const db = createDb(context.cloudflare.env.DATABASE_URL);
 	const image = await getTicketImageForOwner(db, imageId);
 
 	if (!image || image.ticket.ownerId !== user.id) {
 		throw new Response("Not found", { status: 404 });
 	}
 
-	const object = await context.cloudflare.env.ASSETS.get(
-		image.storageKey,
-	);
+	const { env } = getAppContext(context);
+	const object = await env.ASSETS.get(image.storageKey);
 
 	if (!object) {
 		throw new Response("Not found", { status: 404 });

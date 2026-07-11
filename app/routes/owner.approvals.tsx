@@ -18,7 +18,6 @@ import { authClient } from "@/auth/auth.client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { createDb } from "@/db/db.server";
 import {
 	approveTicket,
 	denyTicket,
@@ -53,16 +52,10 @@ function formatDate(date: Date) {
 	}).format(date);
 }
 
-type PendingTicket = Awaited<
-	ReturnType<typeof getOwnerPendingTickets>
->[number];
+type PendingTicket = Awaited<ReturnType<typeof getOwnerPendingTickets>>[number];
 
 export async function loader({ context, request }: Route.LoaderArgs) {
-	const { user, impersonatedBy } = await requireOwner(
-		context.cloudflare.env,
-		request,
-	);
-	const db = createDb(context.cloudflare.env.DATABASE_URL);
+	const { user, db, impersonatedBy } = await requireOwner(context, request);
 	const pending = await getOwnerPendingTickets(db, user.id);
 
 	const locationEntries = await db.query.userLocation.findMany({
@@ -92,11 +85,10 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
-	const { user } = await requireOwner(context.cloudflare.env, request);
+	const { user, db } = await requireOwner(context, request);
 	const formData = await request.formData();
 	const intent = formData.get("intent");
 	const ticketId = String(formData.get("ticketId") ?? "");
-	const db = createDb(context.cloudflare.env.DATABASE_URL);
 
 	if (!ticketId) {
 		return { error: "Manjkajoči podatki." };
@@ -104,12 +96,16 @@ export async function action({ context, request }: Route.ActionArgs) {
 
 	if (intent === "approve-ticket") {
 		const updated = await approveTicket(db, ticketId, user.id);
-		return updated ? { success: true } : { error: "Zahteve ni bilo mogoče odobriti." };
+		return updated
+			? { success: true }
+			: { error: "Zahteve ni bilo mogoče odobriti." };
 	}
 
 	if (intent === "discard-ticket") {
 		const updated = await denyTicket(db, ticketId, user.id);
-		return updated ? { success: true } : { error: "Zahteve ni bilo mogoče zavreči." };
+		return updated
+			? { success: true }
+			: { error: "Zahteve ni bilo mogoče zavreči." };
 	}
 
 	return { error: "Neznano dejanje." };
@@ -124,8 +120,7 @@ function PendingTicketCard({
 }) {
 	const fetcher = useFetcher<typeof action>();
 	const isSubmitting =
-		fetcher.state !== "idle" &&
-		fetcher.formData?.get("ticketId") === ticket.id;
+		fetcher.state !== "idle" && fetcher.formData?.get("ticketId") === ticket.id;
 
 	return (
 		<article className="flex flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm">
@@ -155,7 +150,9 @@ function PendingTicketCard({
 						Soba {ticket.roomNumber}
 					</span>
 				</div>
-				<p className="mt-2 text-sm text-muted-foreground">{ticket.reporterName}</p>
+				<p className="mt-2 text-sm text-muted-foreground">
+					{ticket.reporterName}
+				</p>
 				<p className="mt-1 text-xs text-muted-foreground/70">
 					{formatDate(ticket.createdAt)}
 				</p>
@@ -204,14 +201,11 @@ function PendingTicketCard({
 	);
 }
 
-export default function OwnerApprovalsPage({ loaderData }: Route.ComponentProps) {
-	const {
-		user,
-		locations,
-		pending,
-		isImpersonating,
-		impersonatorName,
-	} = loaderData;
+export default function OwnerApprovalsPage({
+	loaderData,
+}: Route.ComponentProps) {
+	const { user, locations, pending, isImpersonating, impersonatorName } =
+		loaderData;
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [selectedLocationId, setSelectedLocationId] = useState("all");
 	const [isStopping, setIsStopping] = useState(false);
@@ -272,11 +266,7 @@ export default function OwnerApprovalsPage({ loaderData }: Route.ComponentProps)
 							disabled={isStopping}
 							onClick={stopImpersonating}
 						>
-							{isStopping ? (
-								<Loader2 className="animate-spin" />
-							) : (
-								<LogOut />
-							)}
+							{isStopping ? <Loader2 className="animate-spin" /> : <LogOut />}
 							Exit impersonation
 						</Button>
 					</AlertDescription>
@@ -293,7 +283,9 @@ export default function OwnerApprovalsPage({ loaderData }: Route.ComponentProps)
 								strokeWidth={2}
 							/>
 						</div>
-						<span className="text-lg font-semibold tracking-tight">servisnik</span>
+						<span className="text-lg font-semibold tracking-tight">
+							servisnik
+						</span>
 					</div>
 
 					<div className="relative">
