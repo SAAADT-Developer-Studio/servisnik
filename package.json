@@ -57,16 +57,16 @@
 		"node": ">=22.22.0"
 	},
 	"scripts": {
-		"build": "fnm exec -- react-router build",
-		"typegen": "fnm exec -- sh -c 'wrangler types && react-router typegen'",
-		"check": "fnm exec -- sh -c 'tsc && react-router build && wrangler deploy --dry-run'",
+		"build": "react-router build",
+		"typegen": "wrangler types && react-router typegen",
+		"check": "tsc && react-router build && wrangler deploy --dry-run",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
-		"deploy": "fnm exec -- wrangler deploy",
-		"dev": "fnm exec -- react-router dev",
-		"preview": "fnm exec -- sh -c 'pnpm run build && vite preview'",
-		"typecheck": "fnm exec -- sh -c 'pnpm run typegen && tsc -b'"
+		"deploy": "wrangler deploy",
+		"dev": "react-router dev",
+		"preview": "pnpm run build && vite preview",
+		"typecheck": "pnpm run typegen && tsc -b"
 	},
 	"type": "module"
 }
