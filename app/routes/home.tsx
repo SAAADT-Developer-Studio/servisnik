@@ -8,6 +8,7 @@ import { Link, useRouteLoaderData } from "react-router";
 
 import type { Route } from "./+types/home";
 import type { Route as RootRoute } from "../+types/root";
+import demoScreenshot from "@/assets/demo.png";
 import { getDashboardHref } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 
@@ -96,7 +97,7 @@ export default function HomePage() {
 
 						<div className="w-full">
 							<img
-								src="/demo.png"
+								src={demoScreenshot}
 								alt="Predogled nadzorne plošče Servisnik"
 								className="w-full"
 								width={1200}

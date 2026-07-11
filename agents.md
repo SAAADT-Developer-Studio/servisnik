@@ -15,6 +15,7 @@
 - Use `pnpm` for all package and script commands (e.g. `pnpm install`, `pnpm dev`)
 - Keep changes minimal and match existing patterns
 - use getAppContext in actions/loaders to get any global bindings, like auth, db, env, cloudflare, ...
+- Static app assets (images, etc.) live in `app/assets/` and are imported in components (e.g. `import logo from "@/assets/logo.png"`). Vite bundles them at build time. Reserve `public/` for files that must be served at a fixed URL without going through the build — e.g. `favicon.ico`.
 - Use layout routes in `app/routes.ts` for shared page chrome (navbar, footer, sidebars). Do not branch on `pathname` in `root.tsx` or elsewhere to decide which UI shell to show — wrap routes in the appropriate layout instead.
 
 ## Rules

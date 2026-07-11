@@ -20,6 +20,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import logoWithText from "@/assets/logo-with-text.png";
 import { cn } from "@/lib/utils";
 
 export type NavbarUser = {
@@ -252,7 +253,7 @@ function LandingNavbar({
 					className="shrink-0 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4"
 				>
 					<img
-						src="/logo-with-text.png"
+						src={logoWithText}
 						alt="Servisnik"
 						className="h-10 w-auto sm:h-11"
 					/>
@@ -348,7 +349,7 @@ function AppNavbar({
 						className="shrink-0 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4"
 					>
 						<img
-							src="/logo-with-text.png"
+							src={logoWithText}
 							alt="Servisnik"
 							className="h-10 w-auto sm:h-11"
 						/>
