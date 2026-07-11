@@ -15,6 +15,7 @@
 - Use `pnpm` for all package and script commands (e.g. `pnpm install`, `pnpm dev`)
 - Keep changes minimal and match existing patterns
 - use getAppContext in actions/loaders to get any global bindings, like auth, db, env, cloudflare, ...
+- Use layout routes in `app/routes.ts` for shared page chrome (navbar, footer, sidebars). Do not branch on `pathname` in `root.tsx` or elsewhere to decide which UI shell to show — wrap routes in the appropriate layout instead.
 
 ## Rules
 

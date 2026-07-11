@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useLocation, useRevalidator } from "react-router";
+import { Link, NavLink, useRevalidator } from "react-router";
 import {
 	ChevronDown,
 	ClipboardList,
@@ -397,18 +397,6 @@ function AppNavbar({
 	);
 }
 
-function getImpersonationViewingLabel(pathname: string) {
-	if (pathname.startsWith("/owner/approvals")) {
-		return "approvals";
-	}
-
-	if (pathname.startsWith("/owner/locations")) {
-		return "locations";
-	}
-
-	return "the dashboard";
-}
-
 export function Navbar({
 	variant = "app",
 	user = null,
@@ -416,7 +404,6 @@ export function Navbar({
 	isImpersonating = false,
 	impersonatorName = null,
 }: NavbarProps) {
-	const location = useLocation();
 	const [menuOpen, setMenuOpen] = useState(false);
 
 	useEffect(() => {
@@ -440,7 +427,6 @@ export function Navbar({
 				<ImpersonationBanner
 					userName={user.name}
 					impersonatorName={impersonatorName}
-					viewingLabel={getImpersonationViewingLabel(location.pathname)}
 				/>
 			) : null}
 

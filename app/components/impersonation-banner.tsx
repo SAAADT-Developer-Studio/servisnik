@@ -7,13 +7,11 @@ import { Button } from "@/components/ui/button";
 type ImpersonationBannerProps = {
 	userName: string;
 	impersonatorName: string | null;
-	viewingLabel?: string;
 };
 
 export function ImpersonationBanner({
 	userName,
 	impersonatorName,
-	viewingLabel = "the dashboard",
 }: ImpersonationBannerProps) {
 	const [isStopping, setIsStopping] = useState(false);
 
@@ -33,7 +31,7 @@ export function ImpersonationBanner({
 			<p className="min-w-0 truncate">
 				<span className="font-medium text-foreground">Impersonation active</span>
 				<span className="text-muted-foreground">
-					{" — "}You are viewing {viewingLabel} as {userName}
+					{" — "}You are impersonating {userName}
 					{impersonatorName ? ` (admin: ${impersonatorName})` : ""}.
 				</span>
 			</p>

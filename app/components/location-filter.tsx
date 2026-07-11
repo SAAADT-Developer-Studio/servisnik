@@ -108,31 +108,31 @@ export function LocationFilter({
 
 			<Combobox.Trigger
 				className={cn(
-					"group flex w-full items-center gap-2.5 rounded-xl border border-border bg-white px-3 py-2.5 text-left text-sm shadow-sm transition-colors outline-none",
+					"group flex w-full items-center gap-2 rounded-lg border border-border bg-white px-2.5 py-1.5 text-left text-sm shadow-sm transition-colors outline-none",
 					"hover:bg-muted/40 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
 					"data-popup-open:bg-muted/40",
 					className,
 				)}
 			>
-				<span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-muted/80 text-muted-foreground">
-					<MapPin className="size-3.5" />
+				<span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-muted/80 text-muted-foreground">
+					<MapPin className="size-3" />
 				</span>
 
-				<span className="min-w-0 flex-1">
-					<span className="block text-[0.65rem] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+				<span className="min-w-0 flex-1 leading-tight">
+					<span className="block text-[0.6rem] font-medium tracking-[0.1em] text-muted-foreground uppercase">
 						Lokacija
 					</span>
 					<Combobox.Value>
 						{(option: LocationOption | null) => (
-							<span className="block truncate font-medium text-foreground">
+							<span className="block truncate text-[0.8125rem] font-medium text-foreground">
 								{option?.label ?? "Vse lokacije"}
 							</span>
 						)}
 					</Combobox.Value>
 				</span>
 
-				<Combobox.Icon className="flex size-4 shrink-0 items-center justify-center text-muted-foreground transition-transform group-data-popup-open:rotate-180">
-					<ChevronDown className="size-4" />
+				<Combobox.Icon className="flex size-3.5 shrink-0 items-center justify-center text-muted-foreground transition-transform group-data-popup-open:rotate-180">
+					<ChevronDown className="size-3.5" />
 				</Combobox.Icon>
 			</Combobox.Trigger>
 

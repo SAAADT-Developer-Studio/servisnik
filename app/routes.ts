@@ -1,19 +1,22 @@
 import {
 	type RouteConfig,
 	index,
+	layout,
 	prefix,
 	route,
 } from "@react-router/dev/routes";
 
 export default [
-	index("routes/home.tsx"),
-	route("login", "routes/login.tsx"),
-	...prefix("admin", [index("routes/admin.tsx")]),
-	...prefix("owner", [
-		index("routes/owner.tsx"),
-		route("approvals", "routes/owner.approvals.tsx"),
-		route("locations", "routes/owner.locations.tsx"),
+	layout("layouts/landing-layout.tsx", [index("routes/home.tsx")]),
+	layout("layouts/app-layout.tsx", [
+		...prefix("admin", [index("routes/admin.tsx")]),
+		...prefix("owner", [
+			index("routes/owner.tsx"),
+			route("approvals", "routes/owner.approvals.tsx"),
+			route("locations", "routes/owner.locations.tsx"),
+		]),
 	]),
+	route("login", "routes/login.tsx"),
 	route(
 		"location/:locationId/report",
 		"routes/location.$locationId.report.tsx",
