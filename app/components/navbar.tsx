@@ -4,7 +4,6 @@ import {
 	ChevronDown,
 	ClipboardList,
 	Home,
-	Loader2,
 	LogOut,
 	MapPin,
 	Menu,
@@ -13,7 +12,7 @@ import {
 } from "lucide-react";
 
 import { authClient } from "@/auth/auth.client";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ImpersonationBanner } from "@/components/impersonation-banner";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -21,6 +20,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import logoWithText from "@/assets/logo-with-text.png";
 import { cn } from "@/lib/utils";
 
 export type NavbarUser = {
@@ -92,7 +92,7 @@ const ADMIN_LINKS = [{ to: "/admin", label: "Owners", icon: Users }] as const;
 
 const OWNER_LINKS = [
 	{ to: "/owner", label: "Nadzorna plošča", icon: Home, end: true },
-	{ to: "/owner/approvals", label: "Odobritve", icon: ClipboardList },
+	{ to: "/owner/requests", label: "Zahteve", icon: ClipboardList },
 	{ to: "/owner/locations", label: "Lokacije", icon: MapPin },
 ] as const;
 
@@ -154,11 +154,11 @@ function AppNavLinks({
 						<>
 							{variant === "default" ? <link.icon className="size-4" /> : null}
 							{link.label}
-							{link.to === "/owner/approvals" &&
+							{link.to === "/owner/requests" &&
 							pendingCount &&
 							pendingCount > 0 ? (
 								<span
-									aria-label={`${pendingCount} pending approvals`}
+									aria-label={`${pendingCount} pending requests`}
 									className="inline-flex size-5 shrink-0 items-center justify-center rounded-sm bg-foreground text-[11px] font-medium leading-none text-background"
 								>
 									{pendingCount > 9 ? "9+" : pendingCount}
@@ -253,7 +253,7 @@ function LandingNavbar({
 					className="shrink-0 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4"
 				>
 					<img
-						src="/logo-with-text.png"
+						src={logoWithText}
 						alt="Servisnik"
 						className="h-10 w-auto sm:h-11"
 					/>
@@ -349,7 +349,7 @@ function AppNavbar({
 						className="shrink-0 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4"
 					>
 						<img
-							src="/logo-with-text.png"
+							src={logoWithText}
 							alt="Servisnik"
 							className="h-10 w-auto sm:h-11"
 						/>
@@ -406,7 +406,6 @@ export function Navbar({
 	impersonatorName = null,
 }: NavbarProps) {
 	const [menuOpen, setMenuOpen] = useState(false);
-	const [isStopping, setIsStopping] = useState(false);
 
 	useEffect(() => {
 		if (!menuOpen) {
@@ -423,39 +422,13 @@ export function Navbar({
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [menuOpen]);
 
-	async function stopImpersonating() {
-		setIsStopping(true);
-
-		try {
-			await authClient.admin.stopImpersonating();
-			window.location.href = "/admin";
-		} catch {
-			setIsStopping(false);
-		}
-	}
-
 	return (
 		<>
 			{isImpersonating && user ? (
-				<Alert className="rounded-none border-x-0 border-t-0">
-					<AlertTitle>Impersonation active</AlertTitle>
-					<AlertDescription className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-						<span>
-							You are viewing the dashboard as {user.name}
-							{impersonatorName ? ` (admin: ${impersonatorName})` : ""}.
-						</span>
-						<Button
-							type="button"
-							variant="outline"
-							size="sm"
-							disabled={isStopping}
-							onClick={stopImpersonating}
-						>
-							{isStopping ? <Loader2 className="animate-spin" /> : <LogOut />}
-							Exit impersonation
-						</Button>
-					</AlertDescription>
-				</Alert>
+				<ImpersonationBanner
+					userName={user.name}
+					impersonatorName={impersonatorName}
+				/>
 			) : null}
 
 			{variant === "landing" ? (

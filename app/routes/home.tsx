@@ -1,13 +1,9 @@
-import {
-	Clock,
-	Settings,
-	ShieldCheck,
-	Zap,
-} from "lucide-react";
+import { Clock, Settings, ShieldCheck, Zap } from "lucide-react";
 import { Link, useRouteLoaderData } from "react-router";
 
 import type { Route } from "./+types/home";
 import type { Route as RootRoute } from "../+types/root";
+import demoScreenshot from "@/assets/demo.png";
 import { getDashboardHref } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 
@@ -29,7 +25,9 @@ const highlights = [
 ] as const;
 
 export default function HomePage() {
-	const rootData = useRouteLoaderData("root") as RootRoute.ComponentProps["loaderData"];
+	const rootData = useRouteLoaderData(
+		"root",
+	) as RootRoute.ComponentProps["loaderData"];
 	const user = rootData?.user ?? null;
 	const tryHref = user ? getDashboardHref(user.role) : "/login";
 
@@ -58,7 +56,7 @@ export default function HomePage() {
 								id="hero-heading"
 								className="text-[3rem] leading-[1.04] font-bold tracking-[-0.03em] text-balance text-foreground sm:text-6xl lg:text-[4.25rem] lg:leading-[1.05] xl:text-7xl"
 							>
-								vse vzdrževanje na enem mestu.
+								Vse vzdrževanje na enem mestu.
 							</h1>
 
 							<p className="mt-5 max-w-2xl text-xl leading-8 text-muted-foreground sm:mt-6 sm:text-[1.375rem] sm:leading-9 lg:text-2xl lg:leading-10">
@@ -96,7 +94,7 @@ export default function HomePage() {
 
 						<div className="w-full">
 							<img
-								src="/demo.png"
+								src={demoScreenshot}
 								alt="Predogled nadzorne plošče Servisnik"
 								className="w-full"
 								width={1200}

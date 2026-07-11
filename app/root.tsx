@@ -5,43 +5,29 @@ import {
 	Outlet,
 	Scripts,
 	ScrollRestoration,
-	useLocation,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import { getSessionUser } from "./auth/auth-helpers.server";
-import { Navbar } from "./components/navbar";
-import { Footer } from "./components/footer";
 import { getOwnerPendingTicketCount } from "./tickets/tickets.server";
 import "./app.css";
 
-function getNavbarVariant(
-	pathname: string,
-): "landing" | "app" | null {
-	if (pathname === "/") {
-		return "landing";
-	}
-
-	if (pathname.startsWith("/admin") || pathname.startsWith("/owner")) {
-		return "app";
-	}
-
-	return null;
-}
-
-function shouldShowFooter(pathname: string) {
-	if (pathname === "/login" || pathname.includes("/report")) {
-		return false;
-	}
-
-	return (
-		pathname === "/" ||
-		pathname.startsWith("/admin") ||
-		pathname.startsWith("/owner")
-	);
-}
-
 export const links: Route.LinksFunction = () => [
+	{ rel: "icon", href: "/favicon.ico", sizes: "any" },
+	{
+		rel: "icon",
+		type: "image/png",
+		sizes: "32x32",
+		href: "/favicon-32x32.png",
+	},
+	{
+		rel: "icon",
+		type: "image/png",
+		sizes: "16x16",
+		href: "/favicon-16x16.png",
+	},
+	{ rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+	{ rel: "manifest", href: "/site.webmanifest" },
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
 	{
 		rel: "preconnect",
@@ -112,28 +98,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 	);
 }
 
-export default function App({ loaderData }: Route.ComponentProps) {
-	const location = useLocation();
-	const navbarVariant = getNavbarVariant(location.pathname);
-	const showFooter = shouldShowFooter(location.pathname);
-
-	return (
-		<div className="flex min-h-screen flex-col">
-			{navbarVariant ? (
-				<Navbar
-					variant={navbarVariant}
-					user={loaderData.user}
-					pendingCount={loaderData.pendingCount}
-					isImpersonating={loaderData.isImpersonating}
-					impersonatorName={loaderData.impersonatorName}
-				/>
-			) : null}
-			<div className="flex-1">
-				<Outlet />
-			</div>
-			{showFooter ? <Footer user={loaderData.user} /> : null}
-		</div>
-	);
+export default function App() {
+	return <Outlet />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

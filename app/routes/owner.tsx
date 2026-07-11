@@ -17,6 +17,9 @@ import { ClipboardList } from "lucide-react";
 
 import type { Route } from "./+types/owner";
 import { requireOwner } from "@/auth/auth-helpers.server";
+import { LocationFilter } from "@/components/location-filter";
+import { useHydrated } from "@/hooks/use-hydrated";
+import { getLocationColor } from "@/lib/location-colors";
 import { cn } from "@/lib/utils";
 import {
 	isTicketStage,
@@ -38,20 +41,6 @@ const STAGES = [
 	{ key: "IN_PROGRESS" as const, label: "V teku" },
 	{ key: "DONE" as const, label: "Končano" },
 ];
-
-const LOCATION_COLORS = [
-	"bg-emerald-500",
-	"bg-red-500",
-	"bg-amber-400",
-	"bg-blue-500",
-	"bg-violet-500",
-	"bg-pink-500",
-];
-
-function getLocationColor(locationId: string, locationIds: string[]) {
-	const index = locationIds.indexOf(locationId);
-	return LOCATION_COLORS[index % LOCATION_COLORS.length];
-}
 
 type BoardTicket = {
 	id: string;
@@ -241,6 +230,68 @@ function KanbanColumn({
 	);
 }
 
+function KanbanBoardStatic({
+	tickets,
+	locationIds,
+}: {
+	tickets: BoardTicket[];
+	locationIds: string[];
+}) {
+	const grouped = groupTicketsByStage(tickets);
+
+	return (
+		<div className="grid gap-4 lg:grid-cols-3">
+			{STAGES.map((column) => (
+				<section
+					key={column.key}
+					className="flex min-h-[420px] flex-col rounded-2xl bg-white p-4"
+				>
+					<h2 className="mb-4 text-sm font-semibold tracking-[0.15em] text-muted-foreground uppercase">
+						{column.label}
+					</h2>
+					<div className="flex flex-1 flex-col gap-3 rounded-xl p-1">
+						{grouped[column.key].length === 0 ? (
+							<p className="py-8 text-center text-sm text-muted-foreground">
+								Ni opravil
+							</p>
+						) : (
+							grouped[column.key].map((ticket) => (
+								<div
+									key={ticket.id}
+									className="rounded-xl border border-border bg-card p-4 shadow-sm"
+								>
+									<TicketCardContent
+										ticket={ticket}
+										locationIds={locationIds}
+									/>
+								</div>
+							))
+						)}
+					</div>
+				</section>
+			))}
+		</div>
+	);
+}
+
+function KanbanBoardGate({
+	tickets,
+	locationIds,
+}: {
+	tickets: BoardTicket[];
+	locationIds: string[];
+}) {
+	const hydrated = useHydrated();
+
+	if (!hydrated) {
+		return (
+			<KanbanBoardStatic tickets={tickets} locationIds={locationIds} />
+		);
+	}
+
+	return <KanbanBoard tickets={tickets} locationIds={locationIds} />;
+}
+
 function KanbanBoard({
 	tickets,
 	locationIds,
@@ -388,27 +439,17 @@ export default function OwnerPage({ loaderData }: Route.ComponentProps) {
 		<div className="min-h-screen bg-background">
 			<main className="mx-auto max-w-6xl px-4 py-6">
 				<div className="mb-6 flex justify-end">
-					<label className="sr-only" htmlFor="location-filter">
-						Filtriraj po lokaciji
-					</label>
-					<select
-						id="location-filter"
+					<LocationFilter
+						locations={locations}
 						value={selectedLocationId}
-						onChange={(event) => setSelectedLocationId(event.target.value)}
-						className="rounded-lg bg-button px-4 py-2 text-sm font-medium text-white"
-					>
-						<option value="all">vse lokacije</option>
-						{locations.map((entry) => (
-							<option key={entry.id} value={entry.id}>
-								{entry.name}
-							</option>
-						))}
-					</select>
+						onValueChange={setSelectedLocationId}
+						className="w-full sm:max-w-xs"
+					/>
 				</div>
 
 				{pendingCount > 0 ? (
 					<Link
-						to="/owner/approvals"
+						to="/owner/requests"
 						className="mb-6 flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm transition-colors hover:bg-amber-100"
 					>
 						<span className="flex items-center gap-2 font-medium text-amber-900">
@@ -421,7 +462,10 @@ export default function OwnerPage({ loaderData }: Route.ComponentProps) {
 					</Link>
 				) : null}
 
-				<KanbanBoard tickets={filteredApproved} locationIds={locationIds} />
+				<KanbanBoardGate
+					tickets={filteredApproved}
+					locationIds={locationIds}
+				/>
 			</main>
 		</div>
 	);
