@@ -5,10 +5,41 @@ import {
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	useLocation,
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { getSessionUser } from "./auth/auth-helpers.server";
+import { Navbar } from "./components/navbar";
+import { Footer } from "./components/footer";
+import { getOwnerPendingTicketCount } from "./tickets/tickets.server";
 import "./app.css";
+
+function getNavbarVariant(
+	pathname: string,
+): "landing" | "app" | null {
+	if (pathname === "/") {
+		return "landing";
+	}
+
+	if (pathname.startsWith("/admin") || pathname.startsWith("/owner")) {
+		return "app";
+	}
+
+	return null;
+}
+
+function shouldShowFooter(pathname: string) {
+	if (pathname === "/login" || pathname.includes("/report")) {
+		return false;
+	}
+
+	return (
+		pathname === "/" ||
+		pathname.startsWith("/admin") ||
+		pathname.startsWith("/owner")
+	);
+}
 
 export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -22,6 +53,46 @@ export const links: Route.LinksFunction = () => [
 		href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
 	},
 ];
+
+export async function loader({ context, request }: Route.LoaderArgs) {
+	const session = await getSessionUser(context, request);
+
+	if (!session) {
+		return {
+			user: null,
+			pendingCount: 0,
+			isImpersonating: false,
+			impersonatorName: null,
+		};
+	}
+
+	let pendingCount = 0;
+	if (session.user.role === "OWNER") {
+		pendingCount = await getOwnerPendingTicketCount(
+			session.db,
+			session.user.id,
+		);
+	}
+
+	let impersonatorName: string | null = null;
+	if (session.impersonatedBy) {
+		const impersonator = await session.db.query.user.findFirst({
+			where: (users, { eq: eqFn }) => eqFn(users.id, session.impersonatedBy!),
+		});
+		impersonatorName = impersonator?.name ?? null;
+	}
+
+	return {
+		user: {
+			name: session.user.name,
+			email: session.user.email,
+			role: session.user.role,
+		},
+		pendingCount,
+		isImpersonating: Boolean(session.impersonatedBy),
+		impersonatorName,
+	};
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
@@ -41,8 +112,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
 	);
 }
 
-export default function App() {
-	return <Outlet />;
+export default function App({ loaderData }: Route.ComponentProps) {
+	const location = useLocation();
+	const navbarVariant = getNavbarVariant(location.pathname);
+	const showFooter = shouldShowFooter(location.pathname);
+
+	return (
+		<div className="flex min-h-screen flex-col">
+			{navbarVariant ? (
+				<Navbar
+					variant={navbarVariant}
+					user={loaderData.user}
+					pendingCount={loaderData.pendingCount}
+					isImpersonating={loaderData.isImpersonating}
+					impersonatorName={loaderData.impersonatorName}
+				/>
+			) : null}
+			<div className="flex-1">
+				<Outlet />
+			</div>
+			{showFooter ? <Footer user={loaderData.user} /> : null}
+		</div>
+	);
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

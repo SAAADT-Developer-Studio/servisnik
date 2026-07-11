@@ -13,21 +13,25 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { getSessionUser } from "../auth/auth-helpers.server";
 import { authClient } from "../auth/auth.client";
-import { getAppContext } from "../context.server";
+import { getDashboardHref } from "../components/navbar";
 
 export function meta({}: Route.MetaArgs) {
 	return [{ title: "Sign in" }];
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {
-	const { auth } = getAppContext(context);
-	const session = await auth.api.getSession({ headers: request.headers });
+	const session = await getSessionUser(context, request);
 
 	if (session) {
 		const url = new URL(request.url);
 		const redirectTo = url.searchParams.get("redirectTo");
-		throw redirect(redirectTo?.startsWith("/") ? redirectTo : "/");
+		if (redirectTo?.startsWith("/")) {
+			throw redirect(redirectTo);
+		}
+
+		throw redirect(getDashboardHref(session.user.role));
 	}
 
 	return null;
