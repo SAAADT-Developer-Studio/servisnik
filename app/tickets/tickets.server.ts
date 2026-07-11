@@ -1,7 +1,13 @@
 import { and, desc, eq, sql } from "drizzle-orm";
 
 import type { Db } from "../db/db.server";
-import { location, ticket, ticketImage, user, userLocation } from "../db/schema";
+import {
+	location,
+	ticket,
+	ticketImage,
+	user,
+	userLocation,
+} from "../db/schema";
 import { parsePhotoFiles, uploadTicketImages } from "../storage/images.server";
 import { isTicketStage, type TicketStage } from "./tickets";
 
@@ -17,8 +23,7 @@ type CreateReportInput = {
 };
 
 export type CreateReportResult =
-	| { ok: true; ticketId: string }
-	| { ok: false; error: string };
+	{ ok: true; ticketId: string } | { ok: false; error: string };
 
 export function parseReportForm(formData: FormData) {
 	const reporterName = formData.get("reporterName")?.toString().trim() ?? "";
@@ -78,7 +83,10 @@ export async function createReport(
 	const ownerId = await findLocationOwnerId(db, input.locationId);
 
 	if (!ownerId) {
-		return { ok: false as const, error: "This location is not set up to receive reports." };
+		return {
+			ok: false as const,
+			error: "This location is not set up to receive reports.",
+		};
 	}
 
 	const [created] = await db
@@ -93,11 +101,7 @@ export async function createReport(
 		})
 		.returning({ id: ticket.id });
 
-	const uploaded = await uploadTicketImages(
-		assets,
-		created.id,
-		input.photos,
-	);
+	const uploaded = await uploadTicketImages(assets, created.id, input.photos);
 
 	if (uploaded.length > 0) {
 		await db.insert(ticketImage).values(

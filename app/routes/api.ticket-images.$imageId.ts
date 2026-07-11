@@ -18,9 +18,7 @@ export async function loader({ context, request, params }: Route.LoaderArgs) {
 	}
 
 	const { env } = getAppContext(context);
-	const object = await env.ASSETS.get(
-		image.storageKey,
-	);
+	const object = await env.ASSETS.get(image.storageKey);
 
 	if (!object) {
 		throw new Response("Not found", { status: 404 });

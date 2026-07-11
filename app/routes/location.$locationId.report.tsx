@@ -53,7 +53,11 @@ export async function loader({ context, params }: Route.LoaderArgs) {
 	return { location: locationData };
 }
 
-export async function action({ context, params, request }: Route.ActionArgs): Promise<ReportActionData> {
+export async function action({
+	context,
+	params,
+	request,
+}: Route.ActionArgs): Promise<ReportActionData> {
 	const formData = await request.formData();
 	const { reporterName, roomNumber, description, photos, fieldErrors } =
 		parseReportForm(formData);

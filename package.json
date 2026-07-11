@@ -44,6 +44,7 @@
 		"@types/react": "19.2.7",
 		"@types/react-dom": "19.2.3",
 		"drizzle-kit": "^0.31.10",
+		"prettier": "^3.9.5",
 		"tailwindcss": "4.1.17",
 		"typescript": "5.9.3",
 		"vite": "^7.0.0",
@@ -66,6 +67,7 @@
 		"deploy": "wrangler deploy",
 		"dev": "react-router dev",
 		"preview": "pnpm run build && vite preview",
+		"format": "prettier --write .",
 		"typecheck": "pnpm run typegen && tsc -b"
 	},
 	"type": "module"

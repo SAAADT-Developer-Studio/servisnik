@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useFetcher } from "react-router";
-import { CircleAlert, Download, Loader2, LogOut, MapPin, Plus } from "lucide-react";
+import {
+	CircleAlert,
+	Download,
+	Loader2,
+	LogOut,
+	MapPin,
+	Plus,
+} from "lucide-react";
 import QRCode from "qrcode";
 
 import type { Route } from "./+types/owner.locations";
@@ -55,9 +62,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 
 	const locations = entries
 		.map((entry) => entry.location)
-		.sort(
-			(a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-		);
+		.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
 	let impersonatorName: string | null = null;
 	if (impersonatedBy) {
@@ -68,9 +73,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 	}
 
 	const { env } = getAppContext(context);
-	const appUrl =
-		env.BETTER_AUTH_URL ||
-		new URL(request.url).origin;
+	const appUrl = env.BETTER_AUTH_URL || new URL(request.url).origin;
 
 	return {
 		user,
@@ -118,7 +121,9 @@ async function downloadQrCode(url: string, filename: string) {
 	link.click();
 }
 
-export default function OwnerLocationsPage({ loaderData }: Route.ComponentProps) {
+export default function OwnerLocationsPage({
+	loaderData,
+}: Route.ComponentProps) {
 	const { user, locations, appUrl, isImpersonating, impersonatorName } =
 		loaderData;
 	const fetcher = useFetcher<typeof action>();
@@ -179,11 +184,7 @@ export default function OwnerLocationsPage({ loaderData }: Route.ComponentProps)
 							disabled={isStopping}
 							onClick={stopImpersonating}
 						>
-							{isStopping ? (
-								<Loader2 className="animate-spin" />
-							) : (
-								<LogOut />
-							)}
+							{isStopping ? <Loader2 className="animate-spin" /> : <LogOut />}
 							Exit impersonation
 						</Button>
 					</AlertDescription>
@@ -245,8 +246,8 @@ export default function OwnerLocationsPage({ loaderData }: Route.ComponentProps)
 								<DialogHeader>
 									<DialogTitle>Create location</DialogTitle>
 									<DialogDescription>
-										Add a property location. A QR code will link visitors to
-										the report page for that location.
+										Add a property location. A QR code will link visitors to the
+										report page for that location.
 									</DialogDescription>
 								</DialogHeader>
 

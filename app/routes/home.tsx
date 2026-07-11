@@ -57,7 +57,9 @@ export default function HomePage() {
 								strokeWidth={2}
 							/>
 						</span>
-						<span className="text-lg font-semibold tracking-tight">servisnik</span>
+						<span className="text-lg font-semibold tracking-tight">
+							servisnik
+						</span>
 					</a>
 
 					<Button render={<a href="/login" />}>Prijava</Button>
@@ -204,7 +206,9 @@ function BoardColumn({
 		<div className="rounded-xl bg-muted/60 p-2.5">
 			<div className="mb-2.5 flex items-center justify-between px-1">
 				<p className="text-xs font-medium">{title}</p>
-				<span className="font-mono text-[10px] text-muted-foreground">{count}</span>
+				<span className="font-mono text-[10px] text-muted-foreground">
+					{count}
+				</span>
 			</div>
 			<div className="space-y-2">{children}</div>
 		</div>
