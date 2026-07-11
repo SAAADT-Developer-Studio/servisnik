@@ -46,7 +46,7 @@
 		"drizzle-kit": "^0.31.10",
 		"prettier": "^3.9.5",
 		"tailwindcss": "4.1.17",
-		"typescript": "5.9.3",
+		"typescript": "7.0.2",
 		"vite": "^7.0.0",
 		"vite-plugin-devtools-json": "^1.0.0",
 		"vite-tsconfig-paths": "5.1.4",
