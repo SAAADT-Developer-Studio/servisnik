@@ -220,8 +220,7 @@ function LandingActions({
 				<Profile user={user} />
 			) : (
 				<Button
-					variant="outline"
-					className="inline-flex h-auto min-h-12 items-center justify-center rounded-md border-foreground bg-white px-8 py-3.5 text-sm font-medium leading-none text-foreground hover:bg-white hover:text-foreground"
+					className="inline-flex h-auto min-h-12 items-center justify-center rounded-md bg-brand px-8 py-3.5 text-sm font-medium leading-none text-brand-foreground hover:bg-brand/90"
 					render={<Link to="/login" />}
 					onClick={onNavigate}
 				>

@@ -77,9 +77,9 @@ export function Footer({ user }: FooterProps) {
 
 					<div>
 						<p className="font-mono text-xs font-medium tracking-[0.18em] text-background/45 uppercase">
-							Začni
-						</p>
-					</div>
+								Začni
+							</p>
+						</div>
 				</div>
 
 				<div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between">

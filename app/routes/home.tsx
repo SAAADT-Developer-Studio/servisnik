@@ -37,13 +37,22 @@ export default function HomePage() {
 				<section
 					id="funkcionalnosti"
 					aria-labelledby="hero-heading"
-					className="mx-auto max-w-screen-2xl scroll-mt-24 px-4 pt-6 pb-20 sm:px-6 sm:pt-8 lg:px-12 lg:pt-8 lg:pb-28"
+					className="relative mx-auto max-w-screen-2xl scroll-mt-24 overflow-hidden px-4 pt-6 pb-20 sm:px-6 sm:pt-8 lg:px-12 lg:pt-8 lg:pb-28"
 				>
-					<div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-24">
+					<div
+						className="pointer-events-none absolute top-16 right-[8%] hidden size-28 rounded-full bg-brand/10 blur-3xl sm:block"
+						aria-hidden="true"
+					/>
+					<div
+						className="pointer-events-none absolute bottom-24 left-[42%] hidden size-40 rounded-full bg-brand/[0.07] blur-3xl lg:block"
+						aria-hidden="true"
+					/>
+
+					<div className="relative grid items-center gap-12 lg:grid-cols-2 lg:gap-24">
 						<div>
-							<div className="mb-6 inline-flex items-center gap-2 rounded-md border border-border bg-white/80 px-4 py-2 shadow-sm backdrop-blur-sm">
+							<div className="mb-6 inline-flex items-center gap-2 rounded-md border border-brand/20 bg-brand/5 px-4 py-2">
 								<Settings
-									className="size-4 text-foreground"
+									className="size-4 text-brand"
 									strokeWidth={2}
 									aria-hidden="true"
 								/>
@@ -56,7 +65,8 @@ export default function HomePage() {
 								id="hero-heading"
 								className="text-[3rem] leading-[1.04] font-bold tracking-[-0.03em] text-balance text-foreground sm:text-6xl lg:text-[4.25rem] lg:leading-[1.05] xl:text-7xl"
 							>
-								Vse vzdrževanje na enem mestu.
+								Vse vzdrževanje{" "}
+								<span className="text-brand">na enem mestu.</span>
 							</h1>
 
 							<p className="mt-5 max-w-2xl text-xl leading-8 text-muted-foreground sm:mt-6 sm:text-[1.375rem] sm:leading-9 lg:text-2xl lg:leading-10">
@@ -81,18 +91,28 @@ export default function HomePage() {
 										key={item.label}
 										className="flex items-center gap-2.5 text-base text-foreground sm:text-lg"
 									>
-										<item.icon
-											className="size-5 text-foreground"
-											strokeWidth={1.75}
-											aria-hidden="true"
-										/>
+										<span className="flex size-8 items-center justify-center rounded-md bg-brand/10">
+											<item.icon
+												className="size-4 text-brand"
+												strokeWidth={2}
+												aria-hidden="true"
+											/>
+										</span>
 										{item.label}
 									</li>
 								))}
 							</ul>
 						</div>
 
-						<div className="w-full">
+						<div className="relative w-full">
+							<div
+								className="pointer-events-none absolute -top-3 -right-2 size-3 rotate-45 bg-brand sm:-top-4 sm:-right-3 sm:size-3.5"
+								aria-hidden="true"
+							/>
+							<div
+								className="pointer-events-none absolute top-1/3 -left-2 size-2 rotate-45 bg-brand/80 sm:-left-3"
+								aria-hidden="true"
+							/>
 							<img
 								src={demoScreenshot}
 								alt="Predogled nadzorne plošče Servisnik"
