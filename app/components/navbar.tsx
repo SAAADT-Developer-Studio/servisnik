@@ -94,6 +94,7 @@ const OWNER_LINKS = [
 
 const LANDING_LINKS = [
 	{ href: "#funkcionalnosti", label: "Funkcionalnosti" },
+	{ href: "#kako-deluje", label: "Kako deluje" },
 	{ href: "#cenik", label: "Cenik" },
 	{ href: "#o-nas", label: "O nas" },
 	{ href: "#kontakt", label: "Kontakt" },
@@ -177,6 +178,12 @@ function LandingNavLinks({ className }: { className?: string }) {
 			>
 				Funkcionalnosti
 			</a>
+			<a
+				href="#kako-deluje"
+				className="rounded-md px-3.5 py-2 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground"
+			>
+				Kako deluje
+			</a>
 
 			<DropdownMenu>
 				<DropdownMenuTrigger className="group inline-flex items-center gap-1 rounded-md px-3.5 py-2 text-sm font-medium text-foreground/80 transition-colors outline-none hover:text-foreground">
@@ -192,7 +199,7 @@ function LandingNavLinks({ className }: { className?: string }) {
 				</DropdownMenuContent>
 			</DropdownMenu>
 
-			{LANDING_LINKS.slice(1).map((link) => (
+			{LANDING_LINKS.slice(2).map((link) => (
 				<a
 					key={link.href}
 					href={link.href}
@@ -283,6 +290,13 @@ function LandingNavbar({
 						>
 							Funkcionalnosti
 						</a>
+						<a
+							href="#kako-deluje"
+							className="rounded-lg px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-muted"
+							onClick={() => setMenuOpen(false)}
+						>
+							Kako deluje
+						</a>
 						<p className="px-3 pt-2 pb-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">
 							Rešitve
 						</p>
@@ -296,7 +310,7 @@ function LandingNavbar({
 								{link.label}
 							</a>
 						))}
-						{LANDING_LINKS.slice(1).map((link) => (
+						{LANDING_LINKS.slice(2).map((link) => (
 							<a
 								key={link.href}
 								href={link.href}

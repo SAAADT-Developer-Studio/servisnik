@@ -4,6 +4,7 @@ import { Link, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/home";
 import type { Route as RootRoute } from "../+types/root";
 import demoScreenshot from "@/assets/demo.png";
+import { LandingDemo } from "@/components/landing-demo";
 import { getDashboardHref } from "@/lib/dashboard";
 import { Button } from "@/components/ui/button";
 
@@ -37,7 +38,7 @@ export default function HomePage() {
 				<section
 					id="funkcionalnosti"
 					aria-labelledby="hero-heading"
-					className="relative mx-auto max-w-screen-2xl scroll-mt-24 overflow-hidden px-4 pt-6 pb-20 sm:px-6 sm:pt-8 lg:px-12 lg:pt-8 lg:pb-28"
+					className="relative mx-auto flex min-h-[calc(100svh-4.75rem)] max-w-screen-2xl scroll-mt-24 items-center overflow-hidden px-4 py-8 sm:px-6 sm:py-10 lg:px-12"
 				>
 					<div
 						className="pointer-events-none absolute top-16 right-[8%] hidden size-28 rounded-full bg-brand/10 blur-3xl sm:block"
@@ -48,7 +49,7 @@ export default function HomePage() {
 						aria-hidden="true"
 					/>
 
-					<div className="relative grid items-center gap-12 lg:grid-cols-2 lg:gap-24">
+					<div className="relative grid w-full items-center gap-12 lg:grid-cols-2 lg:gap-24">
 						<div>
 							<div className="mb-6 inline-flex items-center gap-2 rounded-md border border-brand/20 bg-brand/5 px-4 py-2">
 								<Settings
@@ -123,6 +124,8 @@ export default function HomePage() {
 						</div>
 					</div>
 				</section>
+
+				<LandingDemo />
 			</main>
 		</div>
 	);
