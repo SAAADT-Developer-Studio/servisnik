@@ -29,10 +29,6 @@ export type NavbarUser = {
 	role: "ADMIN" | "OWNER";
 };
 
-export function getDashboardHref(role: NavbarUser["role"]) {
-	return role === "ADMIN" ? "/admin" : "/owner";
-}
-
 export function Profile({ user }: { user: NavbarUser }) {
 	const revalidator = useRevalidator();
 	const initial = user.name.trim().charAt(0).toUpperCase() || "?";

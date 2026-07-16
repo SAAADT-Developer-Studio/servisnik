@@ -4,7 +4,7 @@ import { Link, useRouteLoaderData } from "react-router";
 import type { Route } from "./+types/home";
 import type { Route as RootRoute } from "../+types/root";
 import demoScreenshot from "@/assets/demo.png";
-import { getDashboardHref } from "@/components/navbar";
+import { getDashboardHref } from "@/lib/dashboard";
 import { Button } from "@/components/ui/button";
 
 export function meta({}: Route.MetaArgs) {

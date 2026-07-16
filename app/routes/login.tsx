@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link, redirect } from "react-router";
+import { getDashboardHref } from "@/lib/dashboard";
+import { href, Link, redirect, useSearchParams } from "react-router";
 import {
 	BarChart3,
 	CircleAlert,
@@ -15,7 +16,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { getSessionUser } from "../auth/auth-helpers.server";
 import { authClient } from "../auth/auth.client";
-import { getDashboardHref } from "../components/navbar";
 
 export function meta({}: Route.MetaArgs) {
 	return [{ title: "Prijava — Servisnik" }];
@@ -56,8 +56,15 @@ const features = [
 ] as const;
 
 export default function Login() {
+	const [searchParams] = useSearchParams();
 	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
+
+	const redirectTo = searchParams.get("redirectTo");
+	const callbackURL =
+		redirectTo?.startsWith("/")
+			? `${href("/login")}?redirectTo=${encodeURIComponent(redirectTo)}`
+			: href("/login");
 
 	async function signInWithGoogle() {
 		setError(null);
@@ -66,7 +73,7 @@ export default function Login() {
 		try {
 			await authClient.signIn.social({
 				provider: "google",
-				callbackURL: "/",
+				callbackURL,
 			});
 		} catch {
 			setError("Prijava z Google računom ni uspela. Poskusite znova.");
